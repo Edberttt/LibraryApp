@@ -8,17 +8,34 @@
 import SwiftUI
 
 struct ContentView: View {
+    @EnvironmentObject var libraryVM: LibraryViewModel
+    
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        NavigationView {
+            List(libraryVM.books) { book in
+                VStack(alignment: .leading) {
+                    Text(book.book_name)
+                        .font(.headline)
+                    Text(book.author_name)
+                        .font(.subheadline)
+                }
+            }
+            .onAppear {
+                libraryVM.fetchBooks()
+            }
+            .navigationTitle("Library Catalog")
         }
-        .padding()
     }
 }
 
-#Preview {
-    ContentView()
-}
+//
+//#Preview {
+//    ContentView()
+//}
+
+//Picker("", selection: $selectedTab) {
+//    Text("Available").tag(0)
+//    Text("On Loan").tag(1)
+//}
+//.pickerStyle(SegmentedPickerStyle())
+//.frame(width: 400,height: 100)
