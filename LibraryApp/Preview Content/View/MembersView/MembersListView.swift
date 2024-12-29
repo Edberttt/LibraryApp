@@ -9,6 +9,7 @@ import SwiftUI
 
 struct MembersView: View {
     @EnvironmentObject var libraryVM: LibraryViewModel
+    @State private var showAddMemberView = false // State to manage sheet visibility
 
     var body: some View {
         NavigationView {
@@ -22,9 +23,24 @@ struct MembersView: View {
                 .padding(.bottom, 10) // Added some padding for better spacing
             }
             .navigationTitle("Members")
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(action: {
+                        showAddMemberView = true // Show the AddMemberView as a sheet
+                    }) {
+                        Image(systemName: "plus")
+                            .font(.title2)
+                    }
+                }
+            }
+            .sheet(isPresented: $showAddMemberView) {
+                AddMemberView()
+                    .environmentObject(libraryVM) // Pass the environment object to AddMemberView
+            }
         }
     }
 }
+
 
 // MARK: - Preview
 //#Preview {
