@@ -7,16 +7,28 @@
 
 import Foundation
 
-struct Member: Identifiable, Decodable {
-    let id: String  // SwiftUI requires `id` for Identifiable protocol
-    let book_name: String
-    let book_year: String
-    let author_name: String
+//struct Member: Identifiable, Decodable {
+//    var id: String
+//    var member_name: String
+//    var member_phone: String
+//    var member_nim: String
+//    var member_major: String
+//}
 
+struct Member: Identifiable, Decodable {
+    var id: String
+    var member_name: String
+    var member_phone: String
+    var member_nim: String
+    var member_major: String
+    
+    
     enum CodingKeys: String, CodingKey {
-        case id = "book_id"  // Map `id` to `book_id` in the JSON response
-        case book_name
-        case book_year
-        case author_name
+        case id = "member_id" // Map the "id" key to "member_id"
+        case member_name
+        case member_phone
+        case member_nim
+        case member_major
     }
 }
+

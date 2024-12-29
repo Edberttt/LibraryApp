@@ -7,35 +7,34 @@
 
 import SwiftUI
 
+import SwiftUI
+
 struct ContentView: View {
     @EnvironmentObject var libraryVM: LibraryViewModel
-    
+
     var body: some View {
-        NavigationView {
-            List(libraryVM.books) { book in
-                VStack(alignment: .leading) {
-                    Text(book.book_name)
-                        .font(.headline)
-                    Text(book.author_name)
-                        .font(.subheadline)
+        TabView {
+            // Books Tab
+            BooksView()
+                .tabItem {
+                    Label("Books", systemImage: "book.fill")
                 }
-            }
-            .onAppear {
-                libraryVM.fetchBooks()
-            }
-            .navigationTitle("Library Catalog")
+            
+            // Members Tab
+            MembersView()
+                .tabItem {
+                    Label("Members", systemImage: "person.2.fill")
+                }
+        }
+        .onAppear {
+            libraryVM.fetchBooks()
+            libraryVM.fetchMembers()
         }
     }
 }
 
-//
+// MARK: - Preview
 //#Preview {
 //    ContentView()
+//        .environmentObject(LibraryViewModel())
 //}
-
-//Picker("", selection: $selectedTab) {
-//    Text("Available").tag(0)
-//    Text("On Loan").tag(1)
-//}
-//.pickerStyle(SegmentedPickerStyle())
-//.frame(width: 400,height: 100)
