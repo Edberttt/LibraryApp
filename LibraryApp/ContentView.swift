@@ -29,6 +29,7 @@ struct ContentView: View {
         .onAppear {
             libraryVM.fetchBooks()
             libraryVM.fetchMembers()
+            libraryVM.fetchLoans()
         }
     }
 }
