@@ -10,6 +10,7 @@ import SwiftUI
 struct BooksView: View {
     @EnvironmentObject var libraryVM: LibraryViewModel
     @State private var selectedTab: Int = 0
+    @State private var showAddBookView: Bool = false // State to control the modal
 
     var body: some View {
         NavigationView {
@@ -22,6 +23,20 @@ struct BooksView: View {
                 .padding()
 
                 if selectedTab == 0 {
+                    HStack {
+                        Spacer()
+                        Button(action: {
+                            showAddBookView.toggle() // Show the modal
+                        }) {
+                            Text("Add Book")
+                                .foregroundColor(.white)
+                                .padding()
+                                .background(Color.blue)
+                                .cornerRadius(8)
+                        }
+                        .padding(.trailing, 16)
+                    }
+
                     List(libraryVM.books) { book in
                         VStack(alignment: .leading) {
                             Text(book.book_name)
@@ -47,9 +62,13 @@ struct BooksView: View {
                 }
             }
             .navigationTitle("Books")
+            .sheet(isPresented: $showAddBookView) {
+                AddBookView() // Present AddBookView as a modal
+            }
         }
     }
 }
+
 
 // MARK: - Preview
 //#Preview {
