@@ -16,4 +16,5 @@ struct Loan: Identifiable, Decodable {
     let member_name: String
     let loan_date: String
     let return_date: String?
+    let delete_status: String
 }

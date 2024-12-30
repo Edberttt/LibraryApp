@@ -22,18 +22,18 @@ struct BooksView: View {
     @State private var alertType: AlertType? = nil
     
     enum AlertType: Identifiable {
-            case delete(Book)
-            case reactivate(Book)
-            
-            var id: String {
-                switch self {
-                case .delete(let book):
-                    return "delete-\(book.id)"
-                case .reactivate(let book):
-                    return "reactivate-\(book.id)"
-                }
+        case delete(Book)
+        case reactivate(Book)
+        
+        var id: String {
+            switch self {
+            case .delete(let book):
+                return "delete-\(book.id)"
+            case .reactivate(let book):
+                return "reactivate-\(book.id)"
             }
         }
+    }
 
     var body: some View {
         NavigationView {
@@ -113,7 +113,7 @@ struct BooksView: View {
                                     bookToReactivate = book
                                     alertType = .reactivate(book)
                                 }) {
-                                    Text("Edit")
+                                    Text("Reactivate")
                                         .foregroundColor(.blue)
                                         .padding(.horizontal)
                                         .padding(.vertical, 6)
