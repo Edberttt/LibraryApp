@@ -13,11 +13,10 @@ struct MembersView: View {
     @State private var selectedMember: Member? = nil// State to hold the selected member for editing
     @State private var selectedTab: Int = 0
     @State private var showEditMemberView: Bool = false
-//    @State private var showDeleteAlert: Bool = false
     @State private var memberToDelete: Member? = nil
     @State private var memberToReactivate: Member? = nil
-//    @State private var showReactivateAlert: Bool = false
     @State private var alertType: AlertType? = nil
+    @State private var searchQuery: String = "" // State for search query
     
     enum AlertType: Identifiable {
         case delete(Member)
@@ -32,6 +31,14 @@ struct MembersView: View {
             }
         }
     }
+
+    var filteredMembers: [Member] {
+        if searchQuery.isEmpty {
+            return memberVM.members
+        } else {
+            return memberVM.members.filter { $0.member_name.localizedCaseInsensitiveContains(searchQuery) }
+        }
+    }
     
     var body: some View {
         NavigationView {
@@ -44,9 +51,9 @@ struct MembersView: View {
                 .padding(.horizontal)
                 
                 if selectedTab == 0 {
-                    ScrollView{
+                    ScrollView {
                         VStack(alignment: .leading) {
-                            ForEach(memberVM.members.filter { $0.delete_status == "0" }, id: \.id) { member in
+                            ForEach(filteredMembers.filter { $0.delete_status == "0" }, id: \.id) { member in
                                 VStack(alignment: .leading) {
                                     Text("Name: \(member.member_name)")
                                         .font(.headline)
@@ -63,7 +70,7 @@ struct MembersView: View {
                                             showEditMemberView = true
                                             selectedMember = member
                                         }) {
-                                            Image(systemName: "pencil") // Pencil symbol for editing
+                                            Image(systemName: "pencil")
                                                 .foregroundColor(.blue)
                                                 .padding(8)
                                                 .background(
@@ -73,12 +80,10 @@ struct MembersView: View {
                                         }
                                         
                                         Button(action: {
-                                            // Store the member to be deleted
                                             memberToDelete = member
                                             alertType = .delete(member)
-                                            print("Delete alert triggered for member: \(member.member_name)")
                                         }) {
-                                            Image(systemName: "trash") // Trash symbol for deleting
+                                            Image(systemName: "trash")
                                                 .foregroundColor(.red)
                                                 .padding(6)
                                                 .background(
@@ -96,11 +101,10 @@ struct MembersView: View {
                         }
                         .padding()
                     }
-                }
-                else{
-                    ScrollView{
+                } else {
+                    ScrollView {
                         VStack(alignment: .leading) {
-                            ForEach(memberVM.members.filter { $0.delete_status == "1" }, id: \.id) { member in
+                            ForEach(filteredMembers.filter { $0.delete_status == "1" }, id: \.id) { member in
                                 VStack(alignment: .leading) {
                                     Text("Name: \(member.member_name)")
                                         .font(.headline)
@@ -114,10 +118,8 @@ struct MembersView: View {
                                     HStack{
                                         Spacer()
                                         Button(action: {
-                                            // Store the member to be deleted
                                             memberToReactivate = member
                                             alertType = .reactivate(member)
-                                            print("Reactivate alert triggered for member: \(member.member_name)")
                                         }) {
                                             Text("Reactivate")
                                                 .foregroundColor(.blue)
@@ -141,7 +143,6 @@ struct MembersView: View {
                 }
             }
             .background(.listBackground)
-            
             .navigationTitle("Members")
             .sheet(isPresented: $showAddMemberView) {
                 AddMemberView()
@@ -149,7 +150,7 @@ struct MembersView: View {
             }
             .sheet(isPresented: $showEditMemberView) {
                 if let selectedMember = selectedMember {
-                    EditMemberView(member: selectedMember) // Pass the unwrapped Binding<Member>
+                    EditMemberView(member: selectedMember)
                         .environmentObject(memberVM)
                 }
             }
@@ -175,20 +176,21 @@ struct MembersView: View {
                     )
                 }
             }
-            
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: {
-                        showAddMemberView = true // Show the AddMemberView as a sheet
+                        showAddMemberView = true
                     }) {
                         Image(systemName: "plus")
                             .font(.title2)
                     }
                 }
             }
+            .searchable(text: $searchQuery)
         }
     }
 }
+
 
 
 // MARK: - Preview
