@@ -10,6 +10,7 @@ import SwiftUI
 struct LoanView: View {
     @EnvironmentObject var loanVM: LoanViewModel
     @State private var showAddLoanView = false
+    @State private var showEditLoanView = false
     @State private var selectedLoan: Loan? = nil
     @State private var selectedTab: Int = 0
     @State private var loanToDelete: Loan? = nil // To store the book to be deleted
@@ -52,74 +53,91 @@ struct LoanView: View {
                 .padding(.trailing, 16)
 
                 if selectedTab == 0 {
-                    List(loanVM.loans.filter { $0.delete_status == "0" }) { loan in
+                    ScrollView{
                         VStack(alignment: .leading) {
-                            Text(loan.book_name)
-                                .font(.headline)
-                            Text("Loaned by: \(loan.member_name)")
-                                .font(.subheadline)
-                            Text("Loan Date: \(loan.loan_date)")
-                                .font(.caption)
-                            Text("Return Date: \(loan.return_date)")
-                                .font(.caption)
-                            
-                            HStack {
-                                Spacer()
-                                Button(action: {
-                                    selectedLoan = loan
-                                }) {
-                                    Text("Edit")
-                                        .foregroundColor(.blue)
+                            ForEach(loanVM.loans.filter { $0.delete_status == "0"}, id: \.id) {loan in
+                                VStack(alignment: .leading) {
+                                    Text(loan.book_name)
+                                        .font(.headline)
+                                    Text("Loaned by: \(loan.member_name)")
+                                        .font(.subheadline)
+                                    Text("Loan Date: \(loan.loan_date)")
+                                        .font(.caption)
+                                    Text("Return Date: \(loan.return_date)")
+                                        .font(.caption)
+                                    
+                                    HStack {
+                                        Spacer()
+                                        Button(action: {
+                                            selectedLoan = loan
+                                            showEditLoanView = true
+                                        }) {
+                                            Text("Edit")
+                                                .foregroundColor(.blue)
+                                        }
+                                        
+                                        Button(action: {
+                                            loanToDelete = loan
+                                            alertType = .delete(loan)
+                                        }) {
+                                            Text("Returned")
+                                                .foregroundColor(.blue)
+                                                .padding(.horizontal)
+                                                .padding(.vertical, 6)
+                                                .overlay(
+                                                    RoundedRectangle(cornerRadius: 5)
+                                                        .stroke(Color.blue, lineWidth: 1)
+                                                )
+                                        }
+                                    }
                                 }
-                                
-//                                Button(action: {
-//                                    loanToDelete = loan
-//                                    alertType = .delete(loan)
-//                                }) {
-//                                    Text("Returned")
-//                                        .foregroundColor(.blue)
-//                                        .padding(.horizontal)
-//                                        .padding(.vertical, 6)
-//                                        .overlay(
-//                                            RoundedRectangle(cornerRadius: 5)
-//                                                .stroke(Color.blue, lineWidth: 1)
-//                                        )
-//                                }
+                                .padding()
+                                Divider()
                             }
+                            .background(Color.white)
+                            .cornerRadius(20)
+//                            ForEach(bookVM.books.filter { $0.delete_status == "0" }, id: \.id) { book in
                         }
-                        .padding(.bottom, 10)
                     }
                 }
                 else {
-                    List(loanVM.loans.filter { $0.delete_status == "1" }) { loan in
+                    ScrollView{
                         VStack(alignment: .leading) {
-                            Text(loan.book_name)
-                                .font(.headline)
-                            Text("Loaned by: \(loan.member_name)")
-                                .font(.subheadline)
-                            Text("Loan Date: \(loan.loan_date)")
-                                .font(.caption)
-                            Text("Return Date: \(loan.return_date)")
-                                .font(.caption)
-                            
-                            HStack {
-                                Spacer()
-                                Button(action: {
-                                    loanToReactive = loan
-                                    alertType = .reactivate(loan)
-                                }) {
-                                    Text("Reactivate")
-                                        .foregroundColor(.blue)
-                                        .padding(.horizontal)
-                                        .padding(.vertical, 6)
-                                        .overlay(
-                                            RoundedRectangle(cornerRadius: 5)
-                                                .stroke(Color.blue, lineWidth: 1)
-                                        )
+                            ForEach(loanVM.loans.filter { $0.delete_status == "1"}, id: \.id) {loan in
+                                VStack(alignment: .leading) {
+                                    Text(loan.book_name)
+                                        .font(.headline)
+                                    Text("Loaned by: \(loan.member_name)")
+                                        .font(.subheadline)
+                                    Text("Loan Date: \(loan.loan_date)")
+                                        .font(.caption)
+                                    Text("Return Date: \(loan.return_date)")
+                                        .font(.caption)
+                                    
+                                    HStack {
+                                        Spacer()
+                                        
+                                        Button(action: {
+                                            loanToReactive = loan
+                                            alertType = .reactivate(loan)
+                                        }) {
+                                            Text("Reactive")
+                                                .foregroundColor(.blue)
+                                                .padding(.horizontal)
+                                                .padding(.vertical, 6)
+                                                .overlay(
+                                                    RoundedRectangle(cornerRadius: 5)
+                                                        .stroke(Color.blue, lineWidth: 1)
+                                                )
+                                        }
+                                    }
                                 }
+                                .padding()
+                                Divider()
                             }
+                            .background(Color.white)
+                            .cornerRadius(20)
                         }
-                        .padding(.bottom, 10)
                     }
                 }
                 
