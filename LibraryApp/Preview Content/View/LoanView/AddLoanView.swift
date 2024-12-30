@@ -12,22 +12,20 @@ struct AddLoanView: View {
     @EnvironmentObject var memberVM: MemberViewModel
     @EnvironmentObject var loanVM: LoanViewModel
     @Environment(\.dismiss) var dismiss
-    
+
     @State private var selectedBookID: String = ""
     @State private var selectedMemberID: String = ""
-    @State private var loanDate: String = ""
-    @State private var returnDate: String = ""
-//    @State private var loanID: Int = 3 // Example: auto-generate or fetch next ID
-    
+    @State private var loanDate: Date = Date() // Date type for loan date
+    @State private var returnDate: Date = Calendar.current.date(byAdding: .day, value: 7, to: Date()) ?? Date() // Default +7 days
     let loanID: Int
-    
+
     var body: some View {
         NavigationView {
             Form {
                 // Book Picker
                 Picker("Select Book", selection: $selectedBookID) {
                     ForEach(bookVM.books, id: \.id) { book in
-                        Text(book.book_name).tag(book.id) // Ensure valid tags
+                        Text(book.book_name).tag(book.id)
                     }
                 }
                 .pickerStyle(MenuPickerStyle())
@@ -40,7 +38,7 @@ struct AddLoanView: View {
                 // Member Picker
                 Picker("Select Member", selection: $selectedMemberID) {
                     ForEach(memberVM.members, id: \.id) { member in
-                        Text(member.member_name).tag(member.id) // Ensure valid tags
+                        Text(member.member_name).tag(member.id)
                     }
                 }
                 .pickerStyle(MenuPickerStyle())
@@ -49,32 +47,27 @@ struct AddLoanView: View {
                         selectedMemberID = firstMember.id
                     }
                 }
-                
-                // Loan Date
-                TextField("Loan Date (YYYY-MM-DD)", text: $loanDate)
-                    .keyboardType(.numbersAndPunctuation)
-                    .onChange(of: loanDate) { newValue in
-                        if !isValidDate(newValue) {
-                            print("Invalid date format. Use YYYY-MM-DD.")
-                        }
+
+                // Loan Date Picker
+                DatePicker("Loan Date", selection: $loanDate, displayedComponents: .date)
+                    .datePickerStyle(CompactDatePickerStyle()) // Calendar style
+                    .onChange(of: loanDate) { newDate in
+                        // Update return date to 7 days after the loan date
+                        returnDate = Calendar.current.date(byAdding: .day, value: 7, to: newDate) ?? newDate
                     }
 
-                // Return Date
-                TextField("Return Date (YYYY-MM-DD, optional)", text: $returnDate)
-                    .keyboardType(.numbersAndPunctuation)
-                    .onChange(of: returnDate) { newValue in
-                        if !newValue.isEmpty && !isValidDate(newValue) {
-                            print("Invalid date format for Return Date. Use YYYY-MM-DD.")
-                        }
-                    }
+                // Return Date Picker
+                DatePicker("Return Date", selection: $returnDate, displayedComponents: .date)
+                    .datePickerStyle(CompactDatePickerStyle())
 
                 // Add Loan Button
                 Button("Add Loan") {
+                    let loanDateString = formatDate(loanDate)
+                    let returnDateString = formatDate(returnDate)
+
                     guard !selectedBookID.isEmpty,
-                          !selectedMemberID.isEmpty,
-                          !loanDate.isEmpty,
-                          isValidDate(loanDate) else {
-                        print("All fields except Return Date are required, and Loan Date must be valid.")
+                          !selectedMemberID.isEmpty else {
+                        print("Please select a book and a member.")
                         return
                     }
 
@@ -82,14 +75,11 @@ struct AddLoanView: View {
                         loanID: loanID,
                         bookID: selectedBookID,
                         memberID: selectedMemberID,
-                        loanDate: loanDate,
-                        returnDate: returnDate.isEmpty ? nil : returnDate
+                        loanDate: loanDateString,
+                        returnDate: returnDateString
                     )
                     dismiss()
                 }
-                
-                
-                
             }
             .navigationTitle("Add Loan")
             .toolbar {
@@ -102,10 +92,10 @@ struct AddLoanView: View {
         }
     }
 
-    // Helper function to validate date format
-    func isValidDate(_ date: String) -> Bool {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd"
-        return dateFormatter.date(from: date) != nil
+    // Helper function to format Date to "yyyy-MM-dd"
+    private func formatDate(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        return formatter.string(from: date)
     }
 }

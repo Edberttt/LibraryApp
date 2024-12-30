@@ -39,7 +39,7 @@ struct LoanView: View {
                     Text("Returned").tag(1)
                 }
                 .pickerStyle(SegmentedPickerStyle())
-                .padding()
+                .padding(.horizontal)
                 
                 if selectedTab == 0 {
                     ScrollView{
@@ -52,7 +52,7 @@ struct LoanView: View {
                                         .font(.subheadline)
                                     Text("Loan Date: \(loan.loan_date)")
                                         .font(.caption)
-                                    Text("Return Date: \(loan.return_date)")
+                                    Text("Return Date: \(formatDate(loan.return_date))")
                                         .font(.caption)
                                     
                                     HStack {
@@ -104,7 +104,7 @@ struct LoanView: View {
                                         .font(.subheadline)
                                     Text("Loan Date: \(loan.loan_date)")
                                         .font(.caption)
-                                    Text("Return Date: \(loan.return_date)")
+                                    Text("Return Date: \(loan.return_date ?? "Not Set")")
                                         .font(.caption)
                                     
                                     HStack {
@@ -180,4 +180,10 @@ struct LoanView: View {
             }
         }
     }
+    
+    private func formatDate(_ date: String?) -> String {
+        guard let date = date else { return "Not Set" }
+        return date // Assuming dates are already in the desired format
+    }
+
 }

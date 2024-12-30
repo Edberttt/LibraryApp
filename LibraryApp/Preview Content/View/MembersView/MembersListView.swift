@@ -41,7 +41,7 @@ struct MembersView: View {
                     Text("Inactive").tag(1)
                 }
                 .pickerStyle(SegmentedPickerStyle())
-                .padding()
+                .padding(.horizontal)
                 
                 if selectedTab == 0 {
                     ScrollView{
@@ -54,7 +54,7 @@ struct MembersView: View {
                                         .font(.subheadline)
                                     Text("NIM: \(member.member_nim)")
                                         .font(.subheadline)
-                                    Text("Majo: \(member.member_major)")
+                                    Text("Major: \(member.member_major)")
                                         .font(.subheadline)
                                     
                                     HStack{
@@ -108,7 +108,7 @@ struct MembersView: View {
                                         .font(.subheadline)
                                     Text("NIM: \(member.member_nim)")
                                         .font(.subheadline)
-                                    Text("Majo: \(member.member_major)")
+                                    Text("Major: \(member.member_major)")
                                         .font(.subheadline)
                                     
                                     HStack{

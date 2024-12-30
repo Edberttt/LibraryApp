@@ -43,7 +43,7 @@ struct BooksView: View {
                     Text("Unavailable").tag(1)
                 }
                 .pickerStyle(SegmentedPickerStyle())
-                .padding()
+                .padding(.horizontal)
                 
                 if selectedTab == 0 {
                     ScrollView {
