@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct AddMemberView: View {
-    @EnvironmentObject var libraryVM: LibraryViewModel
+    @EnvironmentObject var memberVM: MemberViewModel
     @State private var memberName = ""
     @State private var memberPhone = ""
     @State private var memberNIM = ""
@@ -54,7 +54,7 @@ struct AddMemberView: View {
             "member_major": memberMajor
         ]
         
-        libraryVM.addMember(parameters: parameters) { success, errorMessage in
+        memberVM.addMember(parameters: parameters) { success, errorMessage in
             if success {
                 message = "Member added successfully"
             } else {
@@ -63,6 +63,6 @@ struct AddMemberView: View {
             showAlert = true
         }
         
-        libraryVM.fetchMembers()
+        memberVM.fetchMembers()
     }
 }

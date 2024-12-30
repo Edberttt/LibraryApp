@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct AddBookView: View {
-    @EnvironmentObject var libraryVM: LibraryViewModel
+    @EnvironmentObject var bookVM: BookViewModel
     @State private var bookName = ""
     @State private var authorName = ""
     @State private var bookYear = ""
@@ -54,7 +54,7 @@ struct AddBookView: View {
         ]
         
         // Call the PHP function to insert the data
-        libraryVM.addBook(parameters: parameters)
+        bookVM.addBook(parameters: parameters)
         
         // Set success or error message based on the result
         message = "Book added successfully!" // This can be dynamically updated with the actual result of the API call.

@@ -8,10 +8,14 @@
 import SwiftUI
 
 struct BooksView: View {
-    @EnvironmentObject var libraryVM: LibraryViewModel
+    @EnvironmentObject var bookVM: BookViewModel
+    @EnvironmentObject var loanVM: LoanViewModel
     @State private var selectedTab: Int = 0
     @State private var showAddBookView: Bool = false // State to control the modal
     @State private var showingAddLoan = false
+    @State private var showEditBookView: Bool = false
+    @State private var selectedBook: Book? = nil
+    
     
     var body: some View {
         NavigationView {
@@ -38,16 +42,33 @@ struct BooksView: View {
                         .padding(.trailing, 16)
                     }
 
-                    List(libraryVM.books) { book in
+                    List(bookVM.books) { book in
                         VStack(alignment: .leading) {
                             Text(book.book_name)
                                 .font(.headline)
                             Text(book.author_name)
                                 .font(.subheadline)
+                            HStack {
+                                Spacer()
+                                Button(action: {
+                                    showEditBookView = true
+                                    selectedBook = book
+                                }) {
+                                    Text("Edit")
+                                        .foregroundColor(.blue)
+                                        .padding(.horizontal)
+                                        .padding(.vertical, 6)
+                                        .overlay(
+                                            RoundedRectangle(cornerRadius: 5)
+                                                .stroke(Color.blue, lineWidth: 1)
+                                        )
+                                }
+                                
+                            }
                         }
                     }
                 } else {
-                    List(libraryVM.loans) { loan in
+                    List(loanVM.loans) { loan in
                         VStack(alignment: .leading) {
                             Text(loan.book_name)  // Book name that is loaned
                                 .font(.headline)
@@ -66,6 +87,14 @@ struct BooksView: View {
             .sheet(isPresented: $showAddBookView) {
                 AddBookView() // Present AddBookView as a modal
             }
+            .sheet(isPresented: $showEditBookView) {
+                if let selectedBook = selectedBook {
+                    EditBookView(book: selectedBook)
+                        .environmentObject(bookVM)
+                }
+            }
+
+
         }
     }
 }

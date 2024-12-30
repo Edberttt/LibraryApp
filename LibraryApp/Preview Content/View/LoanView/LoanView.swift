@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct LoanView: View {
-    @EnvironmentObject var libraryVM: LibraryViewModel
+    @EnvironmentObject var loanVM: LoanViewModel
     @State private var showAddLoanView = false
     
     var body: some View {
@@ -25,7 +25,7 @@ struct LoanView: View {
                 }
                 .padding(.trailing, 16)
                 
-                List(libraryVM.loans) { loan in
+                List(loanVM.loans) { loan in
                     VStack(alignment: .leading) {
                         Text(loan.book_name)  // Book name that is loaned
                             .font(.headline)
@@ -44,7 +44,7 @@ struct LoanView: View {
             .navigationTitle("Loans")
             .sheet(isPresented: $showAddLoanView) {
 //                AddLoanView() // Present AddBookView as a modal
-                AddLoanView(loanID: libraryVM.loans.count + 1)
+                AddLoanView(loanID: loanVM.loans.count + 1)
             }
         }
     }
