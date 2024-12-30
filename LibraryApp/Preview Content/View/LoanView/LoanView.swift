@@ -5,11 +5,56 @@
 //  Created by Edbert Chandradinata on 29/12/24.
 //
 
+//import SwiftUI
+//
+//struct LoanView: View {
+//    @EnvironmentObject var loanVM: LoanViewModel
+//    @State private var showAddLoanView = false
+//    
+//    var body: some View {
+//        NavigationView {
+//            VStack {
+//                Button(action: {
+//                    showAddLoanView.toggle() // Show the modal
+//                }) {
+//                    Text("Add Loan")
+//                        .foregroundColor(.white)
+//                        .padding()
+//                        .background(Color.blue)
+//                        .cornerRadius(8)
+//                }
+//                .padding(.trailing, 16)
+//                
+//                List(loanVM.loans) { loan in
+//                    VStack(alignment: .leading) {
+//                        Text(loan.book_name)  // Book name that is loaned
+//                            .font(.headline)
+//                        Text("Loaned by: \(loan.member_name)") // Member who loaned
+//                            .font(.subheadline)
+//                        Text("Loan Date: \(loan.loan_date)") // Loan date
+//                            .font(.caption)
+//                        Text("Return Date: \(loan.return_date)") // Return date
+//                            .font(.caption)
+//                    }
+//                    .padding(.bottom, 10) // Added some padding for better spacing
+//                    
+//                }
+//                
+//            }
+//            .navigationTitle("Loans")
+//            .sheet(isPresented: $showAddLoanView) {
+//                AddLoanView(loanID: loanVM.loans.count + 1)
+//            }
+//        }
+//    }
+//}
+
 import SwiftUI
 
 struct LoanView: View {
     @EnvironmentObject var loanVM: LoanViewModel
     @State private var showAddLoanView = false
+    @State private var selectedLoan: Loan? = nil
     
     var body: some View {
         NavigationView {
@@ -27,24 +72,34 @@ struct LoanView: View {
                 
                 List(loanVM.loans) { loan in
                     VStack(alignment: .leading) {
-                        Text(loan.book_name)  // Book name that is loaned
+                        Text(loan.book_name)
                             .font(.headline)
-                        Text("Loaned by: \(loan.member_name)") // Member who loaned
+                        Text("Loaned by: \(loan.member_name)")
                             .font(.subheadline)
-                        Text("Loan Date: \(loan.loan_date)") // Loan date
+                        Text("Loan Date: \(loan.loan_date)")
                             .font(.caption)
-                        Text("Return Date: \(loan.return_date)") // Return date
+                        Text("Return Date: \(loan.return_date)")
                             .font(.caption)
+                        
+                        HStack {
+                            Spacer()
+                            Button(action: {
+                                selectedLoan = loan
+                            }) {
+                                Text("Edit")
+                                    .foregroundColor(.blue)
+                            }
+                        }
                     }
-                    .padding(.bottom, 10) // Added some padding for better spacing
-                    
+                    .padding(.bottom, 10)
                 }
-                
             }
             .navigationTitle("Loans")
             .sheet(isPresented: $showAddLoanView) {
-//                AddLoanView() // Present AddBookView as a modal
                 AddLoanView(loanID: loanVM.loans.count + 1)
+            }
+            .sheet(item: $selectedLoan) { loan in
+                EditLoanView(loan: loan)
             }
         }
     }

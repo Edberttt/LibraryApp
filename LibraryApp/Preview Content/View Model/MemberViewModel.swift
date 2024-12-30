@@ -80,4 +80,49 @@ class MemberViewModel: ObservableObject {
             }
         }.resume()
     }
+    
+    func editMember(parameters: [String: String], completion: @escaping (Bool, String?) -> Void) {
+        guard let url = URL(string: "http://localhost/libraryapp/edit_member.php") else {
+            completion(false, "Invalid URL")
+            return
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        
+        // Formulate POST body
+        let bodyData = parameters.map { "\($0.key)=\($0.value)" }.joined(separator: "&")
+        request.httpBody = bodyData.data(using: .utf8)
+        
+        // Set content type header
+        request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
+        
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            if let error = error {
+                DispatchQueue.main.async {
+                    completion(false, "Error: \(error.localizedDescription)")
+                }
+                return
+            }
+            
+            if let data = data, let jsonResponse = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
+                if let success = jsonResponse["success"] as? Bool, success {
+                    DispatchQueue.main.async {
+                        completion(true, nil)
+                        self.fetchMembers() // Fetch updated members list
+                    }
+                } else {
+                    let errorMessage = jsonResponse["error"] as? String ?? "Unknown error occurred"
+                    DispatchQueue.main.async {
+                        completion(false, errorMessage)
+                    }
+                }
+            } else {
+                DispatchQueue.main.async {
+                    completion(false, "Invalid response from server")
+                }
+            }
+        }.resume()
+    }
+
 }
