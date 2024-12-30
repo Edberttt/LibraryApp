@@ -17,10 +17,23 @@ struct BooksView: View {
     @State private var showingAddLoan = false
     @State private var showEditBookView: Bool = false
     @State private var selectedBook: Book? = nil
-    @State private var showDeleteAlert: Bool = false
     @State private var bookToDelete: Book? = nil // To store the book to be deleted
     @State private var bookToReactivate: Book? = nil
-    @State private var showReactivateAlert: Bool = false
+    @State private var alertType: AlertType? = nil
+    
+    enum AlertType: Identifiable {
+            case delete(Book)
+            case reactivate(Book)
+            
+            var id: String {
+                switch self {
+                case .delete(let book):
+                    return "delete-\(book.id)"
+                case .reactivate(let book):
+                    return "reactivate-\(book.id)"
+                }
+            }
+        }
 
     var body: some View {
         NavigationView {
@@ -47,7 +60,7 @@ struct BooksView: View {
                         .padding(.trailing, 16)
                     }
 
-                    /*List(bookVM.books)*/
+                    
                     List(bookVM.books.filter { $0.delete_status == "0" }) { book in
                         VStack(alignment: .leading) {
                             Text(book.book_name)
@@ -56,23 +69,24 @@ struct BooksView: View {
                                 .font(.subheadline)
                             HStack {
                                 Spacer()
-                                Button(action: {
-                                    showEditBookView = true
-                                    selectedBook = book
-                                }) {
-                                    Image(systemName: "pencil") // Pencil symbol for editing
-                                        .foregroundColor(.blue)
-                                        .padding(8)
-                                        .background(
-                                            RoundedRectangle(cornerRadius: 5)
-                                                .stroke(Color.blue, lineWidth: 1)
-                                        )
-                                }
+//                                Button(action: {
+//                                    showEditBookView = true
+//                                    selectedBook = book
+//                                }) {
+//                                    Image(systemName: "pencil") // Pencil symbol for editing
+//                                        .foregroundColor(.blue)
+//                                        .padding(8)
+//                                        .background(
+//                                            RoundedRectangle(cornerRadius: 5)
+//                                                .stroke(Color.blue, lineWidth: 1)
+//                                        )
+//                                }
 
                                 Button(action: {
                                     // Store the book to be deleted
                                     bookToDelete = book
-                                    showDeleteAlert = true // Show delete confirmation alert
+//                                    showDeleteAlert = true // Show delete confirmation alert
+                                    alertType = .delete(book)
                                 }) {
                                     Image(systemName: "trash") // Trash symbol for deleting
                                         .foregroundColor(.red)
@@ -97,7 +111,7 @@ struct BooksView: View {
                                 Spacer()
                                 Button(action: {
                                     bookToReactivate = book
-                                    showReactivateAlert = true
+                                    alertType = .reactivate(book)
                                 }) {
                                     Text("Edit")
                                         .foregroundColor(.blue)
@@ -124,31 +138,54 @@ struct BooksView: View {
                         .environmentObject(bookVM)
                 }
             }
-            .alert(isPresented: $showDeleteAlert) {
-                Alert(
-                    title: Text("Delete Books"),
-                    message: Text("Are you sure you want to delete this book?"),
-                    primaryButton: .destructive(Text("Delete")) {
-                        // Call the delete function when confirmed
-                        if let bookToDelete = bookToDelete {
-                            bookVM.deleteBook(bookID: bookToDelete.id)
-                        }
-                    },
-                    secondaryButton: .cancel()
-                )
-            }
-            .alert(isPresented: $showReactivateAlert) {
-                Alert(
-                    title: Text("Reactivate Book"),
-                    message: Text("Are you sure you want to reactivate this book?"),
-                    primaryButton: .destructive(Text("Reactivate")) {
-                        // Call the delete function when confirmed
-                        if let bookToReactivate = bookToReactivate {
-                            bookVM.reactivateDeleteBook(bookID: bookToReactivate.id)
-                        }
-                    },
-                    secondaryButton: .cancel()
-                )
+//            .alert(isPresented: $showDeleteAlert) {
+//                Alert(
+//                    title: Text("Delete Books"),
+//                    message: Text("Are you sure you want to delete this book?"),
+//                    primaryButton: .destructive(Text("Delete")) {
+//                        // Call the delete function when confirmed
+//                        if let bookToDelete = bookToDelete {
+//                            bookVM.deleteBook(bookID: bookToDelete.id)
+//                        }
+//                    },
+//                    secondaryButton: .cancel()
+//                )
+//            }
+//            .alert(isPresented: $showReactivateAlert) {
+//                Alert(
+//                    title: Text("Reactivate Book"),
+//                    message: Text("Are you sure you want to reactivate this book?"),
+//                    primaryButton: .destructive(Text("Reactivate")) {
+//                        // Call the delete function when confirmed
+//                        if let bookToReactivate = bookToReactivate {
+//                            bookVM.reactivateDeleteBook(bookID: bookToReactivate.id)
+//                        }
+//                    },
+//                    secondaryButton: .cancel()
+//                )
+//            }
+            
+            .alert(item: $alertType) { alertType in
+                switch alertType {
+                case .delete(let book):
+                    return Alert(
+                        title: Text("Delete Book"),
+                        message: Text("Are you sure you want to delete \(book.book_name)?"),
+                        primaryButton: .destructive(Text("Delete")) {
+                            bookVM.deleteBook(bookID: book.id)
+                        },
+                        secondaryButton: .cancel()
+                    )
+                case .reactivate(let book):
+                    return Alert(
+                        title: Text("Reactivate Book"),
+                        message: Text("Are you sure you want to reactivate \(book.book_name)?"),
+                        primaryButton: .destructive(Text("Reactivate")) {
+                            bookVM.reactivateDeleteBook(bookID: book.id)
+                        },
+                        secondaryButton: .cancel()
+                    )
+                }
             }
         }
     }

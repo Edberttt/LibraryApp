@@ -8,11 +8,12 @@
 import Foundation
 
 struct Member: Identifiable, Decodable {
-    var id: String
-    var member_name: String
-    var member_phone: String
-    var member_nim: String
-    var member_major: String
+    let id: String
+    let member_name: String
+    let member_phone: String
+    let member_nim: String
+    let member_major: String
+    let delete_status: String
     
     
     enum CodingKeys: String, CodingKey {
@@ -21,6 +22,7 @@ struct Member: Identifiable, Decodable {
         case member_phone
         case member_nim
         case member_major
+        case delete_status
     }
 }
 
