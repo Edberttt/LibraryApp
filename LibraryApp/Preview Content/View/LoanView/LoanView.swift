@@ -41,17 +41,6 @@ struct LoanView: View {
                 .pickerStyle(SegmentedPickerStyle())
                 .padding()
                 
-                Button(action: {
-                    showAddLoanView.toggle() // Show the modal
-                }) {
-                    Text("Add Loan")
-                        .foregroundColor(.white)
-                        .padding()
-                        .background(Color.blue)
-                        .cornerRadius(8)
-                }
-                .padding(.trailing, 16)
-
                 if selectedTab == 0 {
                     ScrollView{
                         VStack(alignment: .leading) {
@@ -72,21 +61,25 @@ struct LoanView: View {
                                             selectedLoan = loan
                                             showEditLoanView = true
                                         }) {
-                                            Text("Edit")
+                                            Image(systemName: "pencil") // Pencil symbol for editing
                                                 .foregroundColor(.blue)
+                                                .padding(8)
+                                                .background(
+                                                    RoundedRectangle(cornerRadius: 5)
+                                                        .stroke(Color.blue, lineWidth: 1)
+                                                )
                                         }
                                         
                                         Button(action: {
                                             loanToDelete = loan
                                             alertType = .delete(loan)
                                         }) {
-                                            Text("Returned")
-                                                .foregroundColor(.blue)
-                                                .padding(.horizontal)
-                                                .padding(.vertical, 6)
-                                                .overlay(
+                                            Image(systemName: "trash") // Trash symbol for deleting
+                                                .foregroundColor(.red)
+                                                .padding(6)
+                                                .background(
                                                     RoundedRectangle(cornerRadius: 5)
-                                                        .stroke(Color.blue, lineWidth: 1)
+                                                        .stroke(Color.red, lineWidth: 1)
                                                 )
                                         }
                                     }
@@ -96,8 +89,8 @@ struct LoanView: View {
                             }
                             .background(Color.white)
                             .cornerRadius(20)
-//                            ForEach(bookVM.books.filter { $0.delete_status == "0" }, id: \.id) { book in
                         }
+                        .padding()
                     }
                 }
                 else {
@@ -121,7 +114,7 @@ struct LoanView: View {
                                             loanToReactive = loan
                                             alertType = .reactivate(loan)
                                         }) {
-                                            Text("Reactive")
+                                            Text("Reactivate")
                                                 .foregroundColor(.blue)
                                                 .padding(.horizontal)
                                                 .padding(.vertical, 6)
@@ -138,6 +131,7 @@ struct LoanView: View {
                             .background(Color.white)
                             .cornerRadius(20)
                         }
+                        .padding()
                     }
                 }
                 
@@ -167,11 +161,21 @@ struct LoanView: View {
                     return Alert(
                         title: Text("Reactivate Book"),
                         message: Text("Are you sure you want to reactivate \(loan.book_name)?"),
-                        primaryButton: .destructive(Text("Reactivate")) {
+                        primaryButton: .default(Text("Reactivate")) {
                             loanVM.reactivateDeleteLoan(loanID: loan.id)
                         },
                         secondaryButton: .cancel()
                     )
+                }
+            }
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(action: {
+                        showAddLoanView.toggle()
+                    }) {
+                        Image(systemName: "plus")
+                            .font(.title2)
+                    }
                 }
             }
         }

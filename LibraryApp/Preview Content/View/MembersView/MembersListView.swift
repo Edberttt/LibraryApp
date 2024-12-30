@@ -42,77 +42,101 @@ struct MembersView: View {
                 }
                 .pickerStyle(SegmentedPickerStyle())
                 .padding()
+                
                 if selectedTab == 0 {
-                    List(memberVM.members.filter { $0.delete_status == "0" }){ member in
+                    ScrollView{
                         VStack(alignment: .leading) {
-                            Text(member.member_name)
-                                .font(.headline)
-                            Text("Phone: \(member.member_phone)")
-                                .font(.subheadline)
-                            
-                            HStack{
-                                Button(action: {
-                                    showEditMemberView = true
-                                    selectedMember = member
-                                }) {
-                                    Text("Edit")
-                                        .foregroundColor(.blue)
-                                        .padding(.horizontal)
-                                        .padding(.vertical, 6)
-                                        .overlay(
-                                            RoundedRectangle(cornerRadius: 5)
-                                                .stroke(Color.blue, lineWidth: 1)
-                                        )
+                            ForEach(memberVM.members.filter { $0.delete_status == "0" }, id: \.id) { member in
+                                VStack(alignment: .leading) {
+                                    Text("Name: \(member.member_name)")
+                                        .font(.headline)
+                                    Text("Phone: \(member.member_phone)")
+                                        .font(.subheadline)
+                                    Text("NIM: \(member.member_nim)")
+                                        .font(.subheadline)
+                                    Text("Majo: \(member.member_major)")
+                                        .font(.subheadline)
+                                    
+                                    HStack{
+                                        Spacer()
+                                        Button(action: {
+                                            showEditMemberView = true
+                                            selectedMember = member
+                                        }) {
+                                            Image(systemName: "pencil") // Pencil symbol for editing
+                                                .foregroundColor(.blue)
+                                                .padding(8)
+                                                .background(
+                                                    RoundedRectangle(cornerRadius: 5)
+                                                        .stroke(Color.blue, lineWidth: 1)
+                                                )
+                                        }
+                                        
+                                        Button(action: {
+                                            // Store the member to be deleted
+                                            memberToDelete = member
+                                            alertType = .delete(member)
+                                            print("Delete alert triggered for member: \(member.member_name)")
+                                        }) {
+                                            Image(systemName: "trash") // Trash symbol for deleting
+                                                .foregroundColor(.red)
+                                                .padding(6)
+                                                .background(
+                                                    RoundedRectangle(cornerRadius: 5)
+                                                        .stroke(Color.red, lineWidth: 1)
+                                                )
+                                        }
+                                    }
                                 }
-                                
-                                Button(action: {
-                                    // Store the member to be deleted
-                                    memberToDelete = member
-                                    alertType = .delete(member)
-                                    print("Delete alert triggered for member: \(member.member_name)")
-                                }) {
-                                    Image(systemName: "trash") // Trash symbol for deleting
-                                        .foregroundColor(.red)
-                                        .padding(8)
-                                        .background(
-                                            RoundedRectangle(cornerRadius: 5)
-                                                .stroke(Color.red, lineWidth: 1)
-                                        )
-                                }
+                                .padding()
+                                Divider()
                             }
+                            .background(Color.white)
+                            .cornerRadius(20)
                         }
-                        .padding(.bottom, 10)
-                        
+                        .padding()
                     }
                 }
                 else{
-                    List(memberVM.members.filter { $0.delete_status == "1" }){ member in
+                    ScrollView{
                         VStack(alignment: .leading) {
-                            Text(member.member_name)
-                                .font(.headline)
-                            Text("Phone: \(member.member_phone)")
-                                .font(.subheadline)
-                            
-                            HStack{
-                                
-                                Button(action: {
-                                    // Store the member to be deleted
-                                    memberToReactivate = member
-                                    alertType = .reactivate(member)
-                                    print("Reactive alert triggered for member: \(member.member_name)")
-                                }) {
-                                    Image(systemName: "trash") // Trash symbol for deleting
-                                        .foregroundColor(.red)
-                                        .padding(8)
-                                        .background(
-                                            RoundedRectangle(cornerRadius: 5)
-                                                .stroke(Color.red, lineWidth: 1)
-                                        )
+                            ForEach(memberVM.members.filter { $0.delete_status == "1" }, id: \.id) { member in
+                                VStack(alignment: .leading) {
+                                    Text("Name: \(member.member_name)")
+                                        .font(.headline)
+                                    Text("Phone: \(member.member_phone)")
+                                        .font(.subheadline)
+                                    Text("NIM: \(member.member_nim)")
+                                        .font(.subheadline)
+                                    Text("Majo: \(member.member_major)")
+                                        .font(.subheadline)
+                                    
+                                    HStack{
+                                        Spacer()
+                                        Button(action: {
+                                            // Store the member to be deleted
+                                            memberToReactivate = member
+                                            alertType = .reactivate(member)
+                                            print("Reactivate alert triggered for member: \(member.member_name)")
+                                        }) {
+                                            Text("Reactivate")
+                                                .foregroundColor(.blue)
+                                                .padding(.horizontal)
+                                                .padding(.vertical, 6)
+                                                .overlay(
+                                                    RoundedRectangle(cornerRadius: 5)
+                                                        .stroke(Color.blue, lineWidth: 1)
+                                                )
+                                        }
+                                    }
                                 }
+                                .padding()
+                                Divider()
                             }
+                            .background(Color.white)
+                            .cornerRadius(20)
                         }
-                        .padding(.bottom, 10)
-                        
+                        .padding()
                     }
                 }
             }
@@ -144,7 +168,7 @@ struct MembersView: View {
                     return Alert(
                         title: Text("Reactivate Member"),
                         message: Text("Are you sure you want to reactivate \(member.member_name)?"),
-                        primaryButton: .destructive(Text("Reactivate")) {
+                        primaryButton: .default(Text("Reactivate")) {
                             memberVM.reactivateDeleteMember(memberID: member.id)
                         },
                         secondaryButton: .cancel()

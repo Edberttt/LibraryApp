@@ -46,27 +46,15 @@ struct BooksView: View {
                 .padding()
                 
                 if selectedTab == 0 {
-                    HStack {
-                        Spacer()
-                        Button(action: {
-                            showAddBookView.toggle() // Show the modal
-                        }) {
-                            Text("Add Book")
-                                .foregroundColor(.white)
-                                .padding()
-                                .background(Color.blue)
-                                .cornerRadius(8)
-                        }
-                        .padding(.trailing, 16)
-                    }
-
                     ScrollView {
                         VStack(alignment: .leading) {
                             ForEach(bookVM.books.filter { $0.delete_status == "0" }, id: \.id) { book in
                                 VStack(alignment: .leading) {
-                                    Text(book.book_name)
+                                    Text("Title: \(book.book_name)")
                                         .font(.headline)
-                                    Text(book.author_name)
+                                    Text("Author: \(book.author_name)")
+                                        .font(.subheadline)
+                                    Text("Year Release: \(book.book_year)")
                                         .font(.subheadline)
                                     HStack {
                                         Spacer()
@@ -90,11 +78,12 @@ struct BooksView: View {
                                         }) {
                                             Image(systemName: "trash") // Trash symbol for deleting
                                                 .foregroundColor(.red)
-                                                .padding(8)
+                                                .padding(6)
                                                 .background(
                                                     RoundedRectangle(cornerRadius: 5)
                                                         .stroke(Color.red, lineWidth: 1)
                                                 )
+                                                
                                         }
                                     }
                                 }
@@ -111,9 +100,11 @@ struct BooksView: View {
                         VStack(alignment: .leading) {
                             ForEach(bookVM.books.filter { $0.delete_status == "1" }, id: \.id) { book in
                                 VStack(alignment: .leading) {
-                                    Text(book.book_name)
+                                    Text("Title: \(book.book_name)")
                                         .font(.headline)
-                                    Text(book.author_name)
+                                    Text("Author: \(book.author_name)")
+                                        .font(.subheadline)
+                                    Text("Year Release: \(book.book_year)")
                                         .font(.subheadline)
                                     HStack {
                                         Spacer()
@@ -123,12 +114,13 @@ struct BooksView: View {
                                             bookToReactivate = book
                                             alertType = .reactivate(book)
                                         }) {
-                                            Image(systemName: "arrow.uturn.backward.square.fill") // Trash symbol for deleting
-                                                .foregroundColor(.green)
-                                                .padding(8)
-                                                .background(
+                                            Text("Reactivate")
+                                                .foregroundColor(.blue)
+                                                .padding(.horizontal)
+                                                .padding(.vertical, 6)
+                                                .overlay(
                                                     RoundedRectangle(cornerRadius: 5)
-                                                        .stroke(Color.green, lineWidth: 1)
+                                                        .stroke(Color.blue, lineWidth: 1)
                                                 )
                                         }
                                     }
