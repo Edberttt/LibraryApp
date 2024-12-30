@@ -72,19 +72,19 @@ struct LoanView: View {
                                         .foregroundColor(.blue)
                                 }
                                 
-                                Button(action: {
-                                    loanToDelete = loan
-                                    alertType = .delete(loan)
-                                }) {
-                                    Text("Returned")
-                                        .foregroundColor(.blue)
-                                        .padding(.horizontal)
-                                        .padding(.vertical, 6)
-                                        .overlay(
-                                            RoundedRectangle(cornerRadius: 5)
-                                                .stroke(Color.blue, lineWidth: 1)
-                                        )
-                                }
+//                                Button(action: {
+//                                    loanToDelete = loan
+//                                    alertType = .delete(loan)
+//                                }) {
+//                                    Text("Returned")
+//                                        .foregroundColor(.blue)
+//                                        .padding(.horizontal)
+//                                        .padding(.vertical, 6)
+//                                        .overlay(
+//                                            RoundedRectangle(cornerRadius: 5)
+//                                                .stroke(Color.blue, lineWidth: 1)
+//                                        )
+//                                }
                             }
                         }
                         .padding(.bottom, 10)
@@ -124,6 +124,8 @@ struct LoanView: View {
                 }
                 
             }
+            .background(.listBackground)
+            
             .navigationTitle("Loans")
             .sheet(isPresented: $showAddLoanView) {
                 AddLoanView(loanID: loanVM.loans.count + 1)

@@ -44,7 +44,7 @@ struct BooksView: View {
                 }
                 .pickerStyle(SegmentedPickerStyle())
                 .padding()
-
+                
                 if selectedTab == 0 {
                     HStack {
                         Spacer()
@@ -60,74 +60,91 @@ struct BooksView: View {
                         .padding(.trailing, 16)
                     }
 
-                    
-                    List(bookVM.books.filter { $0.delete_status == "0" }) { book in
+                    ScrollView {
                         VStack(alignment: .leading) {
-                            Text(book.book_name)
-                                .font(.headline)
-                            Text(book.author_name)
-                                .font(.subheadline)
-                            HStack {
-                                Spacer()
-//                                Button(action: {
-//                                    showEditBookView = true
-//                                    selectedBook = book
-//                                }) {
-//                                    Image(systemName: "pencil") // Pencil symbol for editing
-//                                        .foregroundColor(.blue)
-//                                        .padding(8)
-//                                        .background(
-//                                            RoundedRectangle(cornerRadius: 5)
-//                                                .stroke(Color.blue, lineWidth: 1)
-//                                        )
-//                                }
+                            ForEach(bookVM.books.filter { $0.delete_status == "0" }, id: \.id) { book in
+                                VStack(alignment: .leading) {
+                                    Text(book.book_name)
+                                        .font(.headline)
+                                    Text(book.author_name)
+                                        .font(.subheadline)
+                                    HStack {
+                                        Spacer()
+                                        Button(action: {
+                                            showEditBookView = true
+                                            selectedBook = book
+                                        }) {
+                                            Image(systemName: "pencil") // Pencil symbol for editing
+                                                .foregroundColor(.blue)
+                                                .padding(8)
+                                                .background(
+                                                    RoundedRectangle(cornerRadius: 5)
+                                                        .stroke(Color.blue, lineWidth: 1)
+                                                )
+                                        }
 
-                                Button(action: {
-                                    // Store the book to be deleted
-                                    bookToDelete = book
-//                                    showDeleteAlert = true // Show delete confirmation alert
-                                    alertType = .delete(book)
-                                }) {
-                                    Image(systemName: "trash") // Trash symbol for deleting
-                                        .foregroundColor(.red)
-                                        .padding(8)
-                                        .background(
-                                            RoundedRectangle(cornerRadius: 5)
-                                                .stroke(Color.red, lineWidth: 1)
-                                        )
+                                        Button(action: {
+                                            // Store the book to be deleted
+                                            bookToDelete = book
+                                            alertType = .delete(book)
+                                        }) {
+                                            Image(systemName: "trash") // Trash symbol for deleting
+                                                .foregroundColor(.red)
+                                                .padding(8)
+                                                .background(
+                                                    RoundedRectangle(cornerRadius: 5)
+                                                        .stroke(Color.red, lineWidth: 1)
+                                                )
+                                        }
+                                    }
                                 }
-                                
+                                .padding()
+                                Divider()
                             }
+                            .background(Color.white)
+                            .cornerRadius(20)
                         }
+                        .padding()
                     }
                 } else {
-                    List(bookVM.books.filter { $0.delete_status == "1" }) { book in
+                    ScrollView {
                         VStack(alignment: .leading) {
-                            Text(book.book_name)
-                                .font(.headline)
-                            Text(book.author_name)
-                                .font(.subheadline)
-                            HStack {
-                                Spacer()
-                                Button(action: {
-                                    bookToReactivate = book
-                                    alertType = .reactivate(book)
-                                }) {
-                                    Text("Reactivate")
-                                        .foregroundColor(.blue)
-                                        .padding(.horizontal)
-                                        .padding(.vertical, 6)
-                                        .overlay(
-                                            RoundedRectangle(cornerRadius: 5)
-                                                .stroke(Color.blue, lineWidth: 1)
-                                        )
+                            ForEach(bookVM.books.filter { $0.delete_status == "1" }, id: \.id) { book in
+                                VStack(alignment: .leading) {
+                                    Text(book.book_name)
+                                        .font(.headline)
+                                    Text(book.author_name)
+                                        .font(.subheadline)
+                                    HStack {
+                                        Spacer()
+
+                                        Button(action: {
+                                            // Store the book to be deleted
+                                            bookToReactivate = book
+                                            alertType = .reactivate(book)
+                                        }) {
+                                            Image(systemName: "arrow.uturn.backward.square.fill") // Trash symbol for deleting
+                                                .foregroundColor(.green)
+                                                .padding(8)
+                                                .background(
+                                                    RoundedRectangle(cornerRadius: 5)
+                                                        .stroke(Color.green, lineWidth: 1)
+                                                )
+                                        }
+                                    }
                                 }
-                                
+                                .padding()
+                                Divider()
                             }
+                            .background(Color.white)
+                            .cornerRadius(20)
                         }
+                        .padding()
                     }
                 }
             }
+            .background(.listBackground)
+            
             .navigationTitle("Books")
             .sheet(isPresented: $showAddBookView) {
                 AddBookView() // Present AddBookView as a modal
@@ -138,33 +155,6 @@ struct BooksView: View {
                         .environmentObject(bookVM)
                 }
             }
-//            .alert(isPresented: $showDeleteAlert) {
-//                Alert(
-//                    title: Text("Delete Books"),
-//                    message: Text("Are you sure you want to delete this book?"),
-//                    primaryButton: .destructive(Text("Delete")) {
-//                        // Call the delete function when confirmed
-//                        if let bookToDelete = bookToDelete {
-//                            bookVM.deleteBook(bookID: bookToDelete.id)
-//                        }
-//                    },
-//                    secondaryButton: .cancel()
-//                )
-//            }
-//            .alert(isPresented: $showReactivateAlert) {
-//                Alert(
-//                    title: Text("Reactivate Book"),
-//                    message: Text("Are you sure you want to reactivate this book?"),
-//                    primaryButton: .destructive(Text("Reactivate")) {
-//                        // Call the delete function when confirmed
-//                        if let bookToReactivate = bookToReactivate {
-//                            bookVM.reactivateDeleteBook(bookID: bookToReactivate.id)
-//                        }
-//                    },
-//                    secondaryButton: .cancel()
-//                )
-//            }
-            
             .alert(item: $alertType) { alertType in
                 switch alertType {
                 case .delete(let book):
@@ -180,11 +170,22 @@ struct BooksView: View {
                     return Alert(
                         title: Text("Reactivate Book"),
                         message: Text("Are you sure you want to reactivate \(book.book_name)?"),
-                        primaryButton: .destructive(Text("Reactivate")) {
+                        primaryButton: .default(Text("Reactivate").foregroundColor(.green)) {
                             bookVM.reactivateDeleteBook(bookID: book.id)
                         },
                         secondaryButton: .cancel()
                     )
+                }
+            }
+            
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(action: {
+                        showAddBookView.toggle() // Show the AddMemberView as a sheet
+                    }) {
+                        Image(systemName: "plus")
+                            .font(.title2)
+                    }
                 }
             }
         }

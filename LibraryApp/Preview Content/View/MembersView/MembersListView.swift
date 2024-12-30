@@ -51,19 +51,19 @@ struct MembersView: View {
                                 .font(.subheadline)
                             
                             HStack{
-        //                        Button(action: {
-        //                            showEditMemberView = true
-        //                            selectedMember = member
-        //                        }) {
-        //                            Text("Edit")
-        //                                .foregroundColor(.blue)
-        //                                .padding(.horizontal)
-        //                                .padding(.vertical, 6)
-        //                                .overlay(
-        //                                    RoundedRectangle(cornerRadius: 5)
-        //                                        .stroke(Color.blue, lineWidth: 1)
-        //                                )
-        //                        }
+                                Button(action: {
+                                    showEditMemberView = true
+                                    selectedMember = member
+                                }) {
+                                    Text("Edit")
+                                        .foregroundColor(.blue)
+                                        .padding(.horizontal)
+                                        .padding(.vertical, 6)
+                                        .overlay(
+                                            RoundedRectangle(cornerRadius: 5)
+                                                .stroke(Color.blue, lineWidth: 1)
+                                        )
+                                }
                                 
                                 Button(action: {
                                     // Store the member to be deleted
@@ -116,6 +116,8 @@ struct MembersView: View {
                     }
                 }
             }
+            .background(.listBackground)
+            
             .navigationTitle("Members")
             .sheet(isPresented: $showAddMemberView) {
                 AddMemberView()
@@ -127,32 +129,6 @@ struct MembersView: View {
                         .environmentObject(memberVM)
                 }
             }
-//            .alert(isPresented: $showDeleteAlert) {
-//                Alert(
-//                    title: Text("Delete Member"),
-//                    message: Text("Are you sure you want to delete this member?"),
-//                    primaryButton: .destructive(Text("Delete")) {
-//                        // Call the delete function when confirmed
-//                        if let memberToDelete = memberToDelete {
-//                            memberVM.deleteMember(memberID: memberToDelete.id)
-//                        }
-//                    },
-//                    secondaryButton: .cancel()
-//                )
-//            }
-//            .alert(isPresented: $showReactivateAlert) {
-//                Alert(
-//                    title: Text("Reactivate Member"),
-//                    message: Text("Are you sure you want to reactivate this member?"),
-//                    primaryButton: .destructive(Text("Reactivate")) {
-//                        // Call the delete function when confirmed
-//                        if let memberToReactivate = memberToReactivate {
-//                            memberVM.reactivateDeleteMember(memberID: memberToReactivate.id)
-//                        }
-//                    },
-//                    secondaryButton: .cancel()
-//                )
-//            }
             .alert(item: $alertType) { alertType in
                 switch alertType {
                 case .delete(let member):
