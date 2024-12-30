@@ -106,7 +106,7 @@ class LibraryViewModel: ObservableObject {
     
     func addBook(parameters: [String: String]) {
         guard let url = URL(string: "http://localhost/libraryapp/add_books.php") else { return }
-        
+
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         
@@ -133,6 +133,7 @@ class LibraryViewModel: ObservableObject {
                     if let data = data, let jsonResponse = String(data: data, encoding: .utf8) {
                         DispatchQueue.main.async {
                             print("Response: \(jsonResponse)")
+                            self.fetchBooks() // Fetch updated books list
                         }
                     }
                 } else {
@@ -144,6 +145,7 @@ class LibraryViewModel: ObservableObject {
         }.resume()
     }
 
+    
     func addMember(parameters: [String: String], completion: @escaping (Bool, String?) -> Void) {
         guard let url = URL(string: "http://localhost/libraryapp/add_member.php") else { return }
         
@@ -169,6 +171,7 @@ class LibraryViewModel: ObservableObject {
                 if let success = jsonResponse["success"] as? Bool, success {
                     DispatchQueue.main.async {
                         completion(true, nil)
+                        self.fetchMembers() // Fetch updated members list
                     }
                 } else {
                     let errorMessage = jsonResponse["error"] as? String ?? "Unknown error occurred"
@@ -182,10 +185,7 @@ class LibraryViewModel: ObservableObject {
                 }
             }
         }.resume()
-        
-        fetchMembers()
     }
-
 
     
     func addLoan(loanID: Int, bookID: String, memberID: String, loanDate: String, returnDate: String?) {
@@ -231,6 +231,11 @@ class LibraryViewModel: ObservableObject {
                 if let result = try JSONSerialization.jsonObject(with: data) as? [String: Any] {
                     if let success = result["success"] as? Bool, success {
                         print("Loan added successfully, Loan ID: \(result["loan_id"] ?? "N/A")")
+                        
+                        // Fetch loans after successful addition
+                        DispatchQueue.main.async {
+                            self.fetchLoans()
+                        }
                     } else {
                         print("Error adding loan: \(result["error"] ?? "Unknown error")")
                     }
@@ -242,9 +247,5 @@ class LibraryViewModel: ObservableObject {
             }
         }.resume()
     }
-    
-    
-
-
     
 }
