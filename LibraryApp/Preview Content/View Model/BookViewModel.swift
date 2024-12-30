@@ -81,5 +81,48 @@ class BookViewModel: ObservableObject {
         }.resume()
     }
 
+    func editBook(bookID: Int, parameters: [String: String]) {
+        guard let url = URL(string: "http://localhost/libraryapp/edit_books.php") else { return }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        
+        // Include book ID in the parameters
+        var allParameters = parameters
+        allParameters["book_id"] = "\(bookID)"
+        
+        // Set up form data
+        let bodyData = allParameters.map { "\($0.key)=\($0.value)" }.joined(separator: "&")
+        request.httpBody = bodyData.data(using: .utf8)
+        
+        // Set content type header
+        request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
+        
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            if let error = error {
+                DispatchQueue.main.async {
+                    print("Error: \(error.localizedDescription)")
+                }
+                return
+            }
+            
+            if let httpResponse = response as? HTTPURLResponse {
+                if httpResponse.statusCode == 200 {
+                    // Handle the response if status is OK
+                    if let data = data, let jsonResponse = String(data: data, encoding: .utf8) {
+                        DispatchQueue.main.async {
+                            print("Response: \(jsonResponse)")
+                            self.fetchBooks() // Fetch updated books list
+                        }
+                    }
+                } else {
+                    DispatchQueue.main.async {
+                        print("Error: Invalid response from server, status code: \(httpResponse.statusCode)")
+                    }
+                }
+            }
+        }.resume()
+    }
+
     
 }

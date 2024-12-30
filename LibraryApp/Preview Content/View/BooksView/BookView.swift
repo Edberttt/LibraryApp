@@ -13,6 +13,9 @@ struct BooksView: View {
     @State private var selectedTab: Int = 0
     @State private var showAddBookView: Bool = false // State to control the modal
     @State private var showingAddLoan = false
+    @State private var showEditBookView: Bool = false
+    @State private var selectedBook: Book? = nil
+    
     
     var body: some View {
         NavigationView {
@@ -45,6 +48,23 @@ struct BooksView: View {
                                 .font(.headline)
                             Text(book.author_name)
                                 .font(.subheadline)
+                            HStack {
+                                Spacer()
+                                Button(action: {
+                                    showEditBookView = true
+                                    selectedBook = book
+                                }) {
+                                    Text("Edit")
+                                        .foregroundColor(.blue)
+                                        .padding(.horizontal)
+                                        .padding(.vertical, 6)
+                                        .overlay(
+                                            RoundedRectangle(cornerRadius: 5)
+                                                .stroke(Color.blue, lineWidth: 1)
+                                        )
+                                }
+                                
+                            }
                         }
                     }
                 } else {
@@ -67,6 +87,14 @@ struct BooksView: View {
             .sheet(isPresented: $showAddBookView) {
                 AddBookView() // Present AddBookView as a modal
             }
+            .sheet(isPresented: $showEditBookView) {
+                if let selectedBook = selectedBook {
+                    EditBookView(book: selectedBook)
+                        .environmentObject(bookVM)
+                }
+            }
+
+
         }
     }
 }
