@@ -8,7 +8,9 @@
 import SwiftUI
 
 struct AddLoanView: View {
-    @EnvironmentObject var libraryVM: LibraryViewModel
+    @EnvironmentObject var bookVM: BookViewModel
+    @EnvironmentObject var memberVM: MemberViewModel
+    @EnvironmentObject var loanVM: LoanViewModel
     @Environment(\.dismiss) var dismiss
     
     @State private var selectedBookID: String = ""
@@ -24,26 +26,26 @@ struct AddLoanView: View {
             Form {
                 // Book Picker
                 Picker("Select Book", selection: $selectedBookID) {
-                    ForEach(libraryVM.books, id: \.id) { book in
+                    ForEach(bookVM.books, id: \.id) { book in
                         Text(book.book_name).tag(book.id) // Ensure valid tags
                     }
                 }
                 .pickerStyle(MenuPickerStyle())
                 .onAppear {
-                    if let firstBook = libraryVM.books.first {
+                    if let firstBook = bookVM.books.first {
                         selectedBookID = firstBook.id
                     }
                 }
 
                 // Member Picker
                 Picker("Select Member", selection: $selectedMemberID) {
-                    ForEach(libraryVM.members, id: \.id) { member in
+                    ForEach(memberVM.members, id: \.id) { member in
                         Text(member.member_name).tag(member.id) // Ensure valid tags
                     }
                 }
                 .pickerStyle(MenuPickerStyle())
                 .onAppear {
-                    if let firstMember = libraryVM.members.first {
+                    if let firstMember = memberVM.members.first {
                         selectedMemberID = firstMember.id
                     }
                 }
@@ -76,7 +78,7 @@ struct AddLoanView: View {
                         return
                     }
 
-                    libraryVM.addLoan(
+                    loanVM.addLoan(
                         loanID: loanID,
                         bookID: selectedBookID,
                         memberID: selectedMemberID,

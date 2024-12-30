@@ -10,8 +10,11 @@ import SwiftUI
 import SwiftUI
 
 struct ContentView: View {
-    @EnvironmentObject var libraryVM: LibraryViewModel
-
+    @EnvironmentObject var bookVM: BookViewModel
+    @EnvironmentObject var loanVM: LoanViewModel
+    @EnvironmentObject var memberVM: MemberViewModel
+    
+    
     var body: some View {
         TabView {
             // Books Tab
@@ -32,9 +35,9 @@ struct ContentView: View {
                 }
         }
         .onAppear {
-            libraryVM.fetchBooks()
-            libraryVM.fetchMembers()
-            libraryVM.fetchLoans()
+            bookVM.fetchBooks()
+            memberVM.fetchMembers()
+            loanVM.fetchLoans()
         }
     }
 }

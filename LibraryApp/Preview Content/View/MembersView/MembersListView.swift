@@ -8,12 +8,12 @@
 import SwiftUI
 
 struct MembersView: View {
-    @EnvironmentObject var libraryVM: LibraryViewModel
+    @EnvironmentObject var memberVM: MemberViewModel
     @State private var showAddMemberView = false // State to manage sheet visibility
 
     var body: some View {
         NavigationView {
-            List(libraryVM.members) { member in
+            List(memberVM.members) { member in
                 VStack(alignment: .leading) {
                     Text(member.member_name)
                         .font(.headline)
@@ -35,7 +35,7 @@ struct MembersView: View {
             }
             .sheet(isPresented: $showAddMemberView) {
                 AddMemberView()
-                    .environmentObject(libraryVM) // Pass the environment object to AddMemberView
+                    .environmentObject(memberVM) // Pass the environment object to AddMemberView
             }
         }
     }

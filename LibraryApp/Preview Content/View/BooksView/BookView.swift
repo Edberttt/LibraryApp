@@ -8,7 +8,8 @@
 import SwiftUI
 
 struct BooksView: View {
-    @EnvironmentObject var libraryVM: LibraryViewModel
+    @EnvironmentObject var bookVM: BookViewModel
+    @EnvironmentObject var loanVM: LoanViewModel
     @State private var selectedTab: Int = 0
     @State private var showAddBookView: Bool = false // State to control the modal
     @State private var showingAddLoan = false
@@ -38,7 +39,7 @@ struct BooksView: View {
                         .padding(.trailing, 16)
                     }
 
-                    List(libraryVM.books) { book in
+                    List(bookVM.books) { book in
                         VStack(alignment: .leading) {
                             Text(book.book_name)
                                 .font(.headline)
@@ -47,7 +48,7 @@ struct BooksView: View {
                         }
                     }
                 } else {
-                    List(libraryVM.loans) { loan in
+                    List(loanVM.loans) { loan in
                         VStack(alignment: .leading) {
                             Text(loan.book_name)  // Book name that is loaned
                                 .font(.headline)
