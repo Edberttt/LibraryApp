@@ -37,6 +37,7 @@ struct LoanView: View {
                             .font(.caption)
                     }
                     .padding(.bottom, 10) // Added some padding for better spacing
+                    
                 }
                 
             }

@@ -10,47 +10,82 @@ import SwiftUI
 struct AddLoanView: View {
     @EnvironmentObject var libraryVM: LibraryViewModel
     @Environment(\.dismiss) var dismiss
-
-    @State private var loanID: String = ""
+    
     @State private var selectedBookID: String = ""
     @State private var selectedMemberID: String = ""
     @State private var loanDate: String = ""
     @State private var returnDate: String = ""
-    
+    @State private var loanID: Int = 3 // Example: auto-generate or fetch next ID
 
+    
     var body: some View {
         NavigationView {
             Form {
-                // Loan ID
-//                TextField("Loan ID", text: $loanID)
-
                 // Book Picker
                 Picker("Select Book", selection: $selectedBookID) {
-                    ForEach(libraryVM.books) { book in
-                        Text(book.book_name) // Display book name
-                            .tag(book.id)    // `book.id` is a String, matching `selectedBookID`
+                    ForEach(libraryVM.books, id: \.id) { book in
+                        Text(book.book_name).tag(book.id) // Ensure valid tags
                     }
                 }
                 .pickerStyle(MenuPickerStyle())
-
-                // Member Picker
-                Picker("Select Member", selection: $selectedMemberID) {
-                    ForEach(libraryVM.members){ member in
-                        Text(member.member_name)
-                            .tag(member.id)
+//                .onAppear {
+//                    if !libraryVM.books.isEmpty {
+//                        selectedBookID = libraryVM.books.first?.id ?? ""
+//                    } else {
+//                        print("No books available")
+//                    }
+//                }
+                .onAppear {
+                    if let firstBook = libraryVM.books.first {
+                        selectedBookID = firstBook.id
                     }
                 }
 
+                // Member Picker
+                Picker("Select Member", selection: $selectedMemberID) {
+                    ForEach(libraryVM.members, id: \.id) { member in
+                        Text(member.member_name).tag(member.id) // Ensure valid tags
+                    }
+                }
+                .pickerStyle(MenuPickerStyle())
+//                .onAppear {
+//                    if !libraryVM.members.isEmpty {
+//                        selectedMemberID = libraryVM.members.first?.id ?? ""
+//                    } else {
+//                        print("No members available")
+//                    }
+//                }
+                .onAppear {
+                    if let firstMember = libraryVM.members.first {
+                        selectedMemberID = firstMember.id
+                    }
+                }
+                
                 // Loan Date
                 TextField("Loan Date (YYYY-MM-DD)", text: $loanDate)
+                    .keyboardType(.numbersAndPunctuation)
+                    .onChange(of: loanDate) { newValue in
+                        if !isValidDate(newValue) {
+                            print("Invalid date format. Use YYYY-MM-DD.")
+                        }
+                    }
 
                 // Return Date
                 TextField("Return Date (YYYY-MM-DD, optional)", text: $returnDate)
+                    .keyboardType(.numbersAndPunctuation)
+                    .onChange(of: returnDate) { newValue in
+                        if !newValue.isEmpty && !isValidDate(newValue) {
+                            print("Invalid date format for Return Date. Use YYYY-MM-DD.")
+                        }
+                    }
 
                 // Add Loan Button
                 Button("Add Loan") {
-                    guard !loanID.isEmpty, !selectedBookID.isEmpty, !selectedMemberID.isEmpty, !loanDate.isEmpty else {
-                        print("All fields except Return Date are required")
+                    guard !selectedBookID.isEmpty,
+                          !selectedMemberID.isEmpty,
+                          !loanDate.isEmpty,
+                          isValidDate(loanDate) else {
+                        print("All fields except Return Date are required, and Loan Date must be valid.")
                         return
                     }
 
@@ -63,6 +98,9 @@ struct AddLoanView: View {
                     )
                     dismiss()
                 }
+                
+                
+                
             }
             .navigationTitle("Add Loan")
             .toolbar {
@@ -73,5 +111,12 @@ struct AddLoanView: View {
                 }
             }
         }
+    }
+
+    // Helper function to validate date format
+    func isValidDate(_ date: String) -> Bool {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        return dateFormatter.date(from: date) != nil
     }
 }

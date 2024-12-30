@@ -182,11 +182,14 @@ class LibraryViewModel: ObservableObject {
                 }
             }
         }.resume()
+        
+        fetchMembers()
     }
 
 
-    func addLoan(loanID: String, bookID: String, memberID: String, loanDate: String, returnDate: String?) {
-        guard let url = URL(string: "http://localhost/libraryapp/add_loan.php") else { return }
+    
+    func addLoan(loanID: Int, bookID: String, memberID: String, loanDate: String, returnDate: String?) {
+        guard let url = URL(string: "http://localhost/libraryapp/add_loans.php") else { return }
 
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
@@ -194,7 +197,7 @@ class LibraryViewModel: ObservableObject {
 
         // Prepare JSON body
         let loanData: [String: Any] = [
-            "loan_id": loanID,
+            "loan_id": loanID,  // Pass as Int
             "book_id": bookID,
             "member_id": memberID,
             "loan_date": loanDate,
@@ -239,6 +242,9 @@ class LibraryViewModel: ObservableObject {
             }
         }.resume()
     }
+    
+    
+
 
     
 }

@@ -62,5 +62,7 @@ struct AddMemberView: View {
             }
             showAlert = true
         }
+        
+        libraryVM.fetchMembers()
     }
 }
