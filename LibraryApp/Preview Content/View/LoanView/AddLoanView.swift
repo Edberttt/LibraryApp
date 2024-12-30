@@ -15,8 +15,9 @@ struct AddLoanView: View {
     @State private var selectedMemberID: String = ""
     @State private var loanDate: String = ""
     @State private var returnDate: String = ""
-    @State private var loanID: Int = 3 // Example: auto-generate or fetch next ID
-
+//    @State private var loanID: Int = 3 // Example: auto-generate or fetch next ID
+    
+    let loanID: Int
     
     var body: some View {
         NavigationView {
@@ -28,13 +29,6 @@ struct AddLoanView: View {
                     }
                 }
                 .pickerStyle(MenuPickerStyle())
-//                .onAppear {
-//                    if !libraryVM.books.isEmpty {
-//                        selectedBookID = libraryVM.books.first?.id ?? ""
-//                    } else {
-//                        print("No books available")
-//                    }
-//                }
                 .onAppear {
                     if let firstBook = libraryVM.books.first {
                         selectedBookID = firstBook.id
@@ -48,13 +42,6 @@ struct AddLoanView: View {
                     }
                 }
                 .pickerStyle(MenuPickerStyle())
-//                .onAppear {
-//                    if !libraryVM.members.isEmpty {
-//                        selectedMemberID = libraryVM.members.first?.id ?? ""
-//                    } else {
-//                        print("No members available")
-//                    }
-//                }
                 .onAppear {
                     if let firstMember = libraryVM.members.first {
                         selectedMemberID = firstMember.id

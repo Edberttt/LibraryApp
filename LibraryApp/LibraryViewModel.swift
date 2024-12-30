@@ -185,8 +185,6 @@ class LibraryViewModel: ObservableObject {
         
         fetchMembers()
     }
-
-
     
     func addLoan(loanID: Int, bookID: String, memberID: String, loanDate: String, returnDate: String?) {
         guard let url = URL(string: "http://localhost/libraryapp/add_loans.php") else { return }
@@ -231,6 +229,11 @@ class LibraryViewModel: ObservableObject {
                 if let result = try JSONSerialization.jsonObject(with: data) as? [String: Any] {
                     if let success = result["success"] as? Bool, success {
                         print("Loan added successfully, Loan ID: \(result["loan_id"] ?? "N/A")")
+                        
+                        // Fetch loans after successful addition
+                        DispatchQueue.main.async {
+                            self.fetchLoans()
+                        }
                     } else {
                         print("Error adding loan: \(result["error"] ?? "Unknown error")")
                     }
@@ -242,9 +245,5 @@ class LibraryViewModel: ObservableObject {
             }
         }.resume()
     }
-    
-    
-
-
     
 }

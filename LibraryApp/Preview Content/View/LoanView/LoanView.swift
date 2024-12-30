@@ -43,7 +43,8 @@ struct LoanView: View {
             }
             .navigationTitle("Loans")
             .sheet(isPresented: $showAddLoanView) {
-                AddLoanView() // Present AddBookView as a modal
+//                AddLoanView() // Present AddBookView as a modal
+                AddLoanView(loanID: libraryVM.loans.count + 1)
             }
         }
     }
