@@ -125,4 +125,63 @@ class MemberViewModel: ObservableObject {
         }.resume()
     }
 
+    func deleteMember(memberID: String) {
+        guard let url = URL(string: "http://localhost/libraryapp/delete_member.php") else { return }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
+        
+        let postString = "member_id=\(memberID)"
+        request.httpBody = postString.data(using: .utf8)
+
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            if let error = error {
+                print("Error: \(error.localizedDescription)")
+                return
+            }
+            guard let data = data else {
+                print("No data received.")
+                return
+            }
+            if let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
+                print(json["message"] as? String ?? "No message")
+            }
+
+            DispatchQueue.main.async {
+                // Automatically fetch books after deletion
+                self.fetchMembers()
+            }
+        }.resume()
+    }
+    
+    func reactivateDeleteMember(memberID: String) {
+        guard let url = URL(string: "http://localhost/libraryapp/reactivate_delete_member.php") else { return }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
+        
+        let postString = "member_id=\(memberID)"
+        request.httpBody = postString.data(using: .utf8)
+
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            if let error = error {
+                print("Error: \(error.localizedDescription)")
+                return
+            }
+            guard let data = data else {
+                print("No data received.")
+                return
+            }
+            if let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
+                print(json["message"] as? String ?? "No message")
+            }
+
+            DispatchQueue.main.async {
+                // Automatically fetch books after deletion
+                self.fetchMembers()
+            }
+        }.resume()
+    }
 }
