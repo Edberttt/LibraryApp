@@ -11,7 +11,8 @@ struct BooksView: View {
     @EnvironmentObject var libraryVM: LibraryViewModel
     @State private var selectedTab: Int = 0
     @State private var showAddBookView: Bool = false // State to control the modal
-
+    @State private var showingAddLoan = false
+    
     var body: some View {
         NavigationView {
             VStack {

@@ -20,6 +20,11 @@ struct ContentView: View {
                     Label("Books", systemImage: "book.fill")
                 }
             
+            LoanView()
+                .tabItem {
+                    Label("Loans", systemImage: "text.document")
+                }
+            
             // Members Tab
             MembersView()
                 .tabItem {

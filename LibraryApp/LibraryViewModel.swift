@@ -72,34 +72,6 @@ class LibraryViewModel: ObservableObject {
         }.resume()
     }
     
-//    func fetchMembers() {
-//        guard let url = URL(string: "http://localhost/libraryapp/fetch_member.php") else { return }
-//        
-//        URLSession.shared.dataTask(with: url) { data, response, error in
-//            if let error = error {
-//                print("Error: \(error.localizedDescription)")
-//                return
-//            }
-//            
-//            guard let data = data else {
-//                print("No data received")
-//                return
-//            }
-//            // Debugging: print the raw response data to ensure it's JSON
-//            if let jsonString = String(data: data, encoding: .utf8) {
-//                print("Received Data Member: \(jsonString)")
-//            }
-//            
-//            do {
-//                let fetchedMembers = try JSONDecoder().decode([Member].self, from: data)
-//                DispatchQueue.main.async {
-//                    self.members = fetchedMembers
-//                }
-//            } catch {
-//                print("Error decoding Member JSON: \(error)")
-//            }
-//        }.resume()
-//    }
     
     func fetchMembers() {
         guard let url = URL(string: "http://localhost/libraryapp/fetch_member.php") else { return }
@@ -208,6 +180,62 @@ class LibraryViewModel: ObservableObject {
                 DispatchQueue.main.async {
                     completion(false, "Invalid response from server")
                 }
+            }
+        }.resume()
+    }
+
+
+    func addLoan(loanID: String, bookID: String, memberID: String, loanDate: String, returnDate: String?) {
+        guard let url = URL(string: "http://localhost/libraryapp/add_loan.php") else { return }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+        // Prepare JSON body
+        let loanData: [String: Any] = [
+            "loan_id": loanID,
+            "book_id": bookID,
+            "member_id": memberID,
+            "loan_date": loanDate,
+            "return_date": returnDate ?? NSNull()
+        ]
+
+        do {
+            request.httpBody = try JSONSerialization.data(withJSONObject: loanData)
+        } catch {
+            print("Error serializing loan data: \(error)")
+            return
+        }
+
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            if let error = error {
+                print("Error: \(error.localizedDescription)")
+                return
+            }
+
+            guard let data = data else {
+                print("No data received")
+                return
+            }
+
+            // Debugging: print the raw response
+            if let jsonString = String(data: data, encoding: .utf8) {
+                print("Received Data: \(jsonString)")
+            }
+
+            do {
+                if let result = try JSONSerialization.jsonObject(with: data) as? [String: Any] {
+                    if let success = result["success"] as? Bool, success {
+                        print("Loan added successfully, Loan ID: \(result["loan_id"] ?? "N/A")")
+                    } else {
+                        print("Error adding loan: \(result["error"] ?? "Unknown error")")
+                    }
+                } else {
+                    print("Unexpected response format")
+                }
+            } catch {
+                print("Error parsing response JSON: \(error)")
             }
         }.resume()
     }

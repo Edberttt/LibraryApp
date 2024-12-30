@@ -7,14 +7,6 @@
 
 import Foundation
 
-//struct Member: Identifiable, Decodable {
-//    var id: String
-//    var member_name: String
-//    var member_phone: String
-//    var member_nim: String
-//    var member_major: String
-//}
-
 struct Member: Identifiable, Decodable {
     var id: String
     var member_name: String
