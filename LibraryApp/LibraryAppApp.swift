@@ -12,6 +12,7 @@ struct LibraryAppApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environmentObject(LibraryViewModel())
         }
     }
 }

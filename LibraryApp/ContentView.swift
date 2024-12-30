@@ -7,18 +7,40 @@
 
 import SwiftUI
 
+import SwiftUI
+
 struct ContentView: View {
+    @EnvironmentObject var libraryVM: LibraryViewModel
+
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        TabView {
+            // Books Tab
+            BooksView()
+                .tabItem {
+                    Label("Books", systemImage: "book.fill")
+                }
+            
+            LoanView()
+                .tabItem {
+                    Label("Loans", systemImage: "text.document")
+                }
+            
+            // Members Tab
+            MembersView()
+                .tabItem {
+                    Label("Members", systemImage: "person.2.fill")
+                }
         }
-        .padding()
+        .onAppear {
+            libraryVM.fetchBooks()
+            libraryVM.fetchMembers()
+            libraryVM.fetchLoans()
+        }
     }
 }
 
-#Preview {
-    ContentView()
-}
+// MARK: - Preview
+//#Preview {
+//    ContentView()
+//        .environmentObject(LibraryViewModel())
+//}
