@@ -10,6 +10,8 @@ import SwiftUI
 struct MembersView: View {
     @EnvironmentObject var memberVM: MemberViewModel
     @State private var showAddMemberView = false // State to manage sheet visibility
+    @State private var selectedMember: Member? = nil// State to hold the selected member for editing
+    @State private var showEditMemberView: Bool = false
 
     var body: some View {
         NavigationView {
@@ -19,10 +21,38 @@ struct MembersView: View {
                         .font(.headline)
                     Text("Phone: \(member.member_phone)")
                         .font(.subheadline)
+                    
+                    HStack{
+                        Button(action: {
+                            showEditMemberView = true
+                            selectedMember = member
+                        }) {
+                            Text("Edit")
+                                .foregroundColor(.blue)
+                                .padding(.horizontal)
+                                .padding(.vertical, 6)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 5)
+                                        .stroke(Color.blue, lineWidth: 1)
+                                )
+                        }
+                    }
                 }
-                .padding(.bottom, 10) // Added some padding for better spacing
+                .padding(.bottom, 10)
+                
             }
             .navigationTitle("Members")
+            .sheet(isPresented: $showAddMemberView) {
+                AddMemberView()
+                    .environmentObject(memberVM)
+            }
+            .sheet(isPresented: $showEditMemberView) {
+                if let selectedMember = selectedMember {
+                    EditMemberView(member: selectedMember) // Pass the unwrapped Binding<Member>
+                        .environmentObject(memberVM)
+                }
+            }
+            
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: {
@@ -32,10 +62,6 @@ struct MembersView: View {
                             .font(.title2)
                     }
                 }
-            }
-            .sheet(isPresented: $showAddMemberView) {
-                AddMemberView()
-                    .environmentObject(memberVM) // Pass the environment object to AddMemberView
             }
         }
     }
