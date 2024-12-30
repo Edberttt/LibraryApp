@@ -13,14 +13,15 @@ struct LoanView: View {
     @State private var showEditLoanView = false
     @State private var selectedLoan: Loan? = nil
     @State private var selectedTab: Int = 0
-    @State private var loanToDelete: Loan? = nil // To store the book to be deleted
+    @State private var loanToDelete: Loan? = nil
     @State private var loanToReactive: Loan? = nil
-    
+    @State private var searchText: String = "" // Search input
+
     @State private var alertType: AlertType? = nil
     enum AlertType: Identifiable {
         case delete(Loan)
         case reactivate(Loan)
-        
+
         var id: String {
             switch self {
             case .delete(let loan):
@@ -30,7 +31,14 @@ struct LoanView: View {
             }
         }
     }
-    
+
+    var filteredLoans: [Loan] {
+        loanVM.loans.filter { loan in
+            (selectedTab == 0 ? loan.delete_status == "0" : loan.delete_status == "1") &&
+            (searchText.isEmpty || loan.book_name.localizedCaseInsensitiveContains(searchText))
+        }
+    }
+
     var body: some View {
         NavigationView {
             VStack {
@@ -40,28 +48,28 @@ struct LoanView: View {
                 }
                 .pickerStyle(SegmentedPickerStyle())
                 .padding(.horizontal)
-                
-                if selectedTab == 0 {
-                    ScrollView{
-                        VStack(alignment: .leading) {
-                            ForEach(loanVM.loans.filter { $0.delete_status == "0"}, id: \.id) {loan in
-                                VStack(alignment: .leading) {
-                                    Text(loan.book_name)
-                                        .font(.headline)
-                                    Text("Loaned by: \(loan.member_name)")
-                                        .font(.subheadline)
-                                    Text("Loan Date: \(loan.loan_date)")
-                                        .font(.caption)
-                                    Text("Return Date: \(formatDate(loan.return_date))")
-                                        .font(.caption)
-                                    
-                                    HStack {
-                                        Spacer()
+
+                ScrollView {
+                    VStack(alignment: .leading) {
+                        ForEach(filteredLoans, id: \.id) { loan in
+                            VStack(alignment: .leading) {
+                                Text(loan.book_name)
+                                    .font(.headline)
+                                Text("Loaned by: \(loan.member_name)")
+                                    .font(.subheadline)
+                                Text("Loan Date: \(loan.loan_date)")
+                                    .font(.caption)
+                                Text("Return Date: \(formatDate(loan.return_date))")
+                                    .font(.caption)
+
+                                HStack {
+                                    Spacer()
+                                    if selectedTab == 0 {
                                         Button(action: {
                                             selectedLoan = loan
                                             showEditLoanView = true
                                         }) {
-                                            Image(systemName: "pencil") // Pencil symbol for editing
+                                            Image(systemName: "pencil")
                                                 .foregroundColor(.blue)
                                                 .padding(8)
                                                 .background(
@@ -69,12 +77,12 @@ struct LoanView: View {
                                                         .stroke(Color.blue, lineWidth: 1)
                                                 )
                                         }
-                                        
+
                                         Button(action: {
                                             loanToDelete = loan
                                             alertType = .delete(loan)
                                         }) {
-                                            Image(systemName: "trash") // Trash symbol for deleting
+                                            Image(systemName: "trash")
                                                 .foregroundColor(.red)
                                                 .padding(6)
                                                 .background(
@@ -82,34 +90,7 @@ struct LoanView: View {
                                                         .stroke(Color.red, lineWidth: 1)
                                                 )
                                         }
-                                    }
-                                }
-                                .padding()
-                                Divider()
-                            }
-                            .background(Color.white)
-                            .cornerRadius(20)
-                        }
-                        .padding()
-                    }
-                }
-                else {
-                    ScrollView{
-                        VStack(alignment: .leading) {
-                            ForEach(loanVM.loans.filter { $0.delete_status == "1"}, id: \.id) {loan in
-                                VStack(alignment: .leading) {
-                                    Text(loan.book_name)
-                                        .font(.headline)
-                                    Text("Loaned by: \(loan.member_name)")
-                                        .font(.subheadline)
-                                    Text("Loan Date: \(loan.loan_date)")
-                                        .font(.caption)
-                                    Text("Return Date: \(loan.return_date ?? "Not Set")")
-                                        .font(.caption)
-                                    
-                                    HStack {
-                                        Spacer()
-                                        
+                                    } else {
                                         Button(action: {
                                             loanToReactive = loan
                                             alertType = .reactivate(loan)
@@ -125,19 +106,18 @@ struct LoanView: View {
                                         }
                                     }
                                 }
-                                .padding()
-                                Divider()
                             }
-                            .background(Color.white)
-                            .cornerRadius(20)
+                            .padding()
+                            Divider()
                         }
-                        .padding()
+                        .background(Color.white)
+                        .cornerRadius(20)
                     }
+                    .padding()
                 }
-                
             }
+            .searchable(text: $searchText, prompt: "Search by book name") // Search bar
             .background(.listBackground)
-            
             .navigationTitle("Loans")
             .sheet(isPresented: $showAddLoanView) {
                 AddLoanView(loanID: loanVM.loans.count + 1)
@@ -145,13 +125,12 @@ struct LoanView: View {
             .sheet(item: $selectedLoan) { loan in
                 EditLoanView(loan: loan)
             }
-            
             .alert(item: $alertType) { alertType in
                 switch alertType {
                 case .delete(let loan):
                     return Alert(
                         title: Text("Loan Returned"),
-                        message: Text("Are you sure you this loan has been returned? \n \(loan.book_name) loaned by \(loan.member_name)?"),
+                        message: Text("Are you sure this loan has been returned? \n \(loan.book_name) loaned by \(loan.member_name)?"),
                         primaryButton: .destructive(Text("Delete")) {
                             loanVM.deleteLoan(loanID: loan.id)
                         },
@@ -159,7 +138,7 @@ struct LoanView: View {
                     )
                 case .reactivate(let loan):
                     return Alert(
-                        title: Text("Reactivate Book"),
+                        title: Text("Reactivate Loan"),
                         message: Text("Are you sure you want to reactivate \(loan.book_name)?"),
                         primaryButton: .default(Text("Reactivate")) {
                             loanVM.reactivateDeleteLoan(loanID: loan.id)
@@ -180,10 +159,9 @@ struct LoanView: View {
             }
         }
     }
-    
+
     private func formatDate(_ date: String?) -> String {
         guard let date = date else { return "Not Set" }
         return date // Assuming dates are already in the desired format
     }
-
 }

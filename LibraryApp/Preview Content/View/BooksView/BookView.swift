@@ -13,18 +13,19 @@ struct BooksView: View {
     @EnvironmentObject var bookVM: BookViewModel
     @EnvironmentObject var loanVM: LoanViewModel
     @State private var selectedTab: Int = 0
-    @State private var showAddBookView: Bool = false // State to control the modal
+    @State private var showAddBookView: Bool = false
     @State private var showingAddLoan = false
     @State private var showEditBookView: Bool = false
     @State private var selectedBook: Book? = nil
-    @State private var bookToDelete: Book? = nil // To store the book to be deleted
+    @State private var bookToDelete: Book? = nil
     @State private var bookToReactivate: Book? = nil
     @State private var alertType: AlertType? = nil
-    
+    @State private var searchText: String = ""
+
     enum AlertType: Identifiable {
         case delete(Book)
         case reactivate(Book)
-        
+
         var id: String {
             switch self {
             case .delete(let book):
@@ -32,6 +33,13 @@ struct BooksView: View {
             case .reactivate(let book):
                 return "reactivate-\(book.id)"
             }
+        }
+    }
+
+    var filteredBooks: [Book] {
+        bookVM.books.filter { book in
+            (selectedTab == 0 ? book.delete_status == "0" : book.delete_status == "1") &&
+            (searchText.isEmpty || book.book_name.localizedCaseInsensitiveContains(searchText))
         }
     }
 
@@ -44,25 +52,25 @@ struct BooksView: View {
                 }
                 .pickerStyle(SegmentedPickerStyle())
                 .padding(.horizontal)
-                
-                if selectedTab == 0 {
-                    ScrollView {
-                        VStack(alignment: .leading) {
-                            ForEach(bookVM.books.filter { $0.delete_status == "0" }, id: \.id) { book in
-                                VStack(alignment: .leading) {
-                                    Text("Title: \(book.book_name)")
-                                        .font(.headline)
-                                    Text("Author: \(book.author_name)")
-                                        .font(.subheadline)
-                                    Text("Year Release: \(book.book_year)")
-                                        .font(.subheadline)
-                                    HStack {
-                                        Spacer()
+
+                ScrollView {
+                    VStack(alignment: .leading) {
+                        ForEach(filteredBooks, id: \.id) { book in
+                            VStack(alignment: .leading) {
+                                Text("Title: \(book.book_name)")
+                                    .font(.headline)
+                                Text("Author: \(book.author_name)")
+                                    .font(.subheadline)
+                                Text("Year Release: \(book.book_year)")
+                                    .font(.subheadline)
+                                HStack {
+                                    Spacer()
+                                    if selectedTab == 0 {
                                         Button(action: {
                                             showEditBookView = true
                                             selectedBook = book
                                         }) {
-                                            Image(systemName: "pencil") // Pencil symbol for editing
+                                            Image(systemName: "pencil")
                                                 .foregroundColor(.blue)
                                                 .padding(8)
                                                 .background(
@@ -70,47 +78,20 @@ struct BooksView: View {
                                                         .stroke(Color.blue, lineWidth: 1)
                                                 )
                                         }
-
                                         Button(action: {
-                                            // Store the book to be deleted
                                             bookToDelete = book
                                             alertType = .delete(book)
                                         }) {
-                                            Image(systemName: "trash") // Trash symbol for deleting
+                                            Image(systemName: "trash")
                                                 .foregroundColor(.red)
                                                 .padding(6)
                                                 .background(
                                                     RoundedRectangle(cornerRadius: 5)
                                                         .stroke(Color.red, lineWidth: 1)
                                                 )
-                                                
                                         }
-                                    }
-                                }
-                                .padding()
-                                Divider()
-                            }
-                            .background(Color.white)
-                            .cornerRadius(20)
-                        }
-                        .padding()
-                    }
-                } else {
-                    ScrollView {
-                        VStack(alignment: .leading) {
-                            ForEach(bookVM.books.filter { $0.delete_status == "1" }, id: \.id) { book in
-                                VStack(alignment: .leading) {
-                                    Text("Title: \(book.book_name)")
-                                        .font(.headline)
-                                    Text("Author: \(book.author_name)")
-                                        .font(.subheadline)
-                                    Text("Year Release: \(book.book_year)")
-                                        .font(.subheadline)
-                                    HStack {
-                                        Spacer()
-
+                                    } else {
                                         Button(action: {
-                                            // Store the book to be deleted
                                             bookToReactivate = book
                                             alertType = .reactivate(book)
                                         }) {
@@ -125,21 +106,21 @@ struct BooksView: View {
                                         }
                                     }
                                 }
-                                .padding()
-                                Divider()
                             }
-                            .background(Color.white)
-                            .cornerRadius(20)
+                            .padding()
+                            Divider()
                         }
-                        .padding()
+                        .background(Color.white)
+                        .cornerRadius(20)
                     }
+                    .padding()
                 }
             }
+            .searchable(text: $searchText, prompt: "Search by book name")
             .background(.listBackground)
-            
             .navigationTitle("Books")
             .sheet(isPresented: $showAddBookView) {
-                AddBookView() // Present AddBookView as a modal
+                AddBookView()
             }
             .sheet(isPresented: $showEditBookView) {
                 if let selectedBook = selectedBook {
@@ -169,11 +150,10 @@ struct BooksView: View {
                     )
                 }
             }
-            
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: {
-                        showAddBookView.toggle() // Show the AddMemberView as a sheet
+                        showAddBookView.toggle()
                     }) {
                         Image(systemName: "plus")
                             .font(.title2)
@@ -183,6 +163,7 @@ struct BooksView: View {
         }
     }
 }
+
 
 
 
