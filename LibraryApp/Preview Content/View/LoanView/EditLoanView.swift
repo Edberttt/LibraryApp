@@ -46,16 +46,23 @@ struct EditLoanView: View {
                 Section(header: Text("Loan Details")) {
                     // Loan Date Picker
                     DatePicker("Loan Date", selection: $loanDate, displayedComponents: .date)
-                        .datePickerStyle(CompactDatePickerStyle()) // Compact style
-                        .onChange(of: loanDate) { newDate in
-                            // Automatically update returnDate to 7 days after loanDate
-                            if newDate > returnDate {
-                                returnDate = newDate
+                        .datePickerStyle(CompactDatePickerStyle())
+                        .onChange(of: loanDate) { newLoanDate in
+                            // Ensure returnDate is at least 7 days after loanDate
+                            if returnDate < newLoanDate {
+                                returnDate = Calendar.current.date(byAdding: .day, value: 7, to: newLoanDate) ?? newLoanDate
                             }
                         }
+
                     // Return Date Picker
                     DatePicker("Return Date", selection: $returnDate, displayedComponents: .date)
                         .datePickerStyle(CompactDatePickerStyle())
+                        .onChange(of: returnDate) { newReturnDate in
+                            // If returnDate is set earlier than loanDate, adjust loanDate
+                            if newReturnDate < loanDate {
+                                loanDate = newReturnDate
+                            }
+                        }
                 }
                 
                 // Book and Member Selection Section

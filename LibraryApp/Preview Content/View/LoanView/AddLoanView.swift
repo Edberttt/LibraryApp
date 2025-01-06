@@ -60,15 +60,23 @@ struct AddLoanView: View {
 
                 // Loan Date Picker
                 DatePicker("Loan Date", selection: $loanDate, displayedComponents: .date)
-                    .datePickerStyle(CompactDatePickerStyle()) // Calendar style
-                    .onChange(of: loanDate) { newDate in
-                        // Update return date to 7 days after the loan date
-                        returnDate = Calendar.current.date(byAdding: .day, value: 7, to: newDate) ?? newDate
+                    .datePickerStyle(CompactDatePickerStyle())
+                    .onChange(of: loanDate) { newLoanDate in
+                        // Ensure returnDate is at least 7 days after loanDate
+                        if returnDate < newLoanDate {
+                            returnDate = Calendar.current.date(byAdding: .day, value: 7, to: newLoanDate) ?? newLoanDate
+                        }
                     }
 
                 // Return Date Picker
                 DatePicker("Return Date", selection: $returnDate, displayedComponents: .date)
                     .datePickerStyle(CompactDatePickerStyle())
+                    .onChange(of: returnDate) { newReturnDate in
+                        // If returnDate is set earlier than loanDate, adjust loanDate
+                        if newReturnDate < loanDate {
+                            loanDate = newReturnDate
+                        }
+                    }
 
                 // Add Loan Button
                 Button("Add Loan") {

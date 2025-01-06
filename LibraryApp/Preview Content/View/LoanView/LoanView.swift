@@ -82,13 +82,14 @@ struct LoanView: View {
                                             loanToDelete = loan
                                             alertType = .delete(loan)
                                         }) {
-                                            Image(systemName: "trash")
-                                                .foregroundColor(.red)
+                                            Image(systemName: "checkmark.circle.fill")
+                                                .foregroundColor(.green)
                                                 .padding(6)
-                                                .background(
-                                                    RoundedRectangle(cornerRadius: 5)
-                                                        .stroke(Color.red, lineWidth: 1)
-                                                )
+                                                
+//                                                .background(
+//                                                    RoundedRectangle(cornerRadius: 5)
+//                                                        .stroke(Color.red, lineWidth: 1)
+//                                                )
                                         }
                                     } else {
                                         Button(action: {
@@ -131,7 +132,7 @@ struct LoanView: View {
                     return Alert(
                         title: Text("Loan Returned"),
                         message: Text("Are you sure this loan has been returned? \n \(loan.book_name) loaned by \(loan.member_name)?"),
-                        primaryButton: .destructive(Text("Delete")) {
+                        primaryButton: .default(Text("Returned")) {
                             loanVM.deleteLoan(loanID: loan.id)
                         },
                         secondaryButton: .cancel()
