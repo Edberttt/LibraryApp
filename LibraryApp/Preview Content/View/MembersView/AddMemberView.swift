@@ -9,6 +9,7 @@ import SwiftUI
 
 struct AddMemberView: View {
     @EnvironmentObject var memberVM: MemberViewModel
+    @Environment(\.dismiss) var dismiss
     @State private var memberName = ""
     @State private var memberPhone = ""
     @State private var memberNIM = ""
@@ -27,7 +28,11 @@ struct AddMemberView: View {
                     TextField("Major", text: $memberMajor)
                 }
                 
-                Button(action: addMember) {
+                Button(action: {
+                    addMember()
+                    dismiss()
+                })
+                {
                     Text("Add Member")
                         .frame(maxWidth: .infinity)
                 }

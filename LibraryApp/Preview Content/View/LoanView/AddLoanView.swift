@@ -19,31 +19,41 @@ struct AddLoanView: View {
     @State private var returnDate: Date = Calendar.current.date(byAdding: .day, value: 7, to: Date()) ?? Date() // Default +7 days
     let loanID: Int
 
+    // Filtered active books
+    var activeBooks: [Book] {
+        bookVM.books.filter { $0.delete_status == "0" } // Only books with delete_status == "0"
+    }
+
+    // Filtered active members
+    var activeMembers: [Member] {
+        memberVM.members.filter { $0.delete_status == "0" } // Only members with delete_status == "0"
+    }
+
     var body: some View {
         NavigationView {
             Form {
                 // Book Picker
                 Picker("Select Book", selection: $selectedBookID) {
-                    ForEach(bookVM.books, id: \.id) { book in
+                    ForEach(activeBooks, id: \.id) { book in
                         Text(book.book_name).tag(book.id)
                     }
                 }
                 .pickerStyle(MenuPickerStyle())
                 .onAppear {
-                    if let firstBook = bookVM.books.first {
+                    if let firstBook = activeBooks.first {
                         selectedBookID = firstBook.id
                     }
                 }
 
                 // Member Picker
                 Picker("Select Member", selection: $selectedMemberID) {
-                    ForEach(memberVM.members, id: \.id) { member in
+                    ForEach(activeMembers, id: \.id) { member in
                         Text(member.member_name).tag(member.id)
                     }
                 }
                 .pickerStyle(MenuPickerStyle())
                 .onAppear {
-                    if let firstMember = memberVM.members.first {
+                    if let firstMember = activeMembers.first {
                         selectedMemberID = firstMember.id
                     }
                 }
