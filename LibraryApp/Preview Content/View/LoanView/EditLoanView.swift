@@ -15,6 +15,15 @@ struct EditLoanView: View {
     
     var loan: Loan
     
+    var activeBooks: [Book] {
+        bookVM.books.filter { $0.delete_status == "0" } // Only books with delete_status == "0"
+    }
+
+    // Filtered active members
+    var activeMembers: [Member] {
+        memberVM.members.filter { $0.delete_status == "0" } // Only members with delete_status == "0"
+    }
+    
     // States for the form fields
     @State private var loanDate: Date
     @State private var returnDate: Date
@@ -51,8 +60,9 @@ struct EditLoanView: View {
                 
                 // Book and Member Selection Section
                 Section(header: Text("Select Book and Member")) {
-                    PickerView(title: "Select Book", selection: $selectedBookID, items: bookVM.books, labelKey: \.book_name, idKey: \.id)
-                    PickerView(title: "Select Member", selection: $selectedMemberID, items: memberVM.members, labelKey: \.member_name, idKey: \.id)
+                    PickerView(title: "Select Book", selection: $selectedBookID, items: activeBooks, labelKey: \.book_name, idKey: \.id)
+                    PickerView(title: "Select Member", selection: $selectedMemberID, items: activeMembers, labelKey: \.member_name, idKey: \.id)
+                    
                 }
                 
                 // Save Changes Button
