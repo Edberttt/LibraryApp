@@ -56,8 +56,6 @@ struct EditBookView: View {
                         .cornerRadius(8)
                 }
 
-
-
             }
             .navigationTitle("Edit Book")
             .onAppear {

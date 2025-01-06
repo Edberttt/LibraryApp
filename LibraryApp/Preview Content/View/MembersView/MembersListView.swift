@@ -12,7 +12,7 @@ struct MembersView: View {
     @State private var showAddMemberView = false // State to manage sheet visibility
     @State private var selectedMember: Member? = nil// State to hold the selected member for editing
     @State private var selectedTab: Int = 0
-    @State private var showEditMemberView: Bool = false
+//    @State private var showEditMemberView: Bool = false
     @State private var memberToDelete: Member? = nil
     @State private var memberToReactivate: Member? = nil
     @State private var alertType: AlertType? = nil
@@ -67,7 +67,7 @@ struct MembersView: View {
                                     HStack{
                                         Spacer()
                                         Button(action: {
-                                            showEditMemberView = true
+//                                            showEditMemberView = true
                                             selectedMember = member
                                         }) {
                                             Image(systemName: "pencil")
@@ -148,11 +148,9 @@ struct MembersView: View {
                 AddMemberView()
                     .environmentObject(memberVM)
             }
-            .sheet(isPresented: $showEditMemberView) {
-                if let selectedMember = selectedMember {
-                    EditMemberView(member: selectedMember)
-                        .environmentObject(memberVM)
-                }
+            .sheet(item: $selectedMember) { member in
+                EditMemberView(member: member)
+                    .environmentObject(memberVM)
             }
             .alert(item: $alertType) { alertType in
                 switch alertType {

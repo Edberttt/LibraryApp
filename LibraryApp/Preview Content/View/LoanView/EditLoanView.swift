@@ -16,16 +16,16 @@ struct EditLoanView: View {
     var loan: Loan
     
     // States for the form fields
-    @State private var loanDate: String
-    @State private var returnDate: String
+    @State private var loanDate: Date
+    @State private var returnDate: Date
     @State private var selectedBookID: String
     @State private var selectedMemberID: String
     
     // Custom initializer to set initial state
     init(loan: Loan) {
         self.loan = loan
-        _loanDate = State(initialValue: loan.loan_date)
-        _returnDate = State(initialValue: loan.return_date ?? "")
+        _loanDate = State(initialValue: Self.dateFormatter.date(from: loan.loan_date) ?? Date())
+        _returnDate = State(initialValue: Self.dateFormatter.date(from: loan.return_date ?? "") ?? Calendar.current.date(byAdding: .day, value: 7, to: Date())!)
         _selectedBookID = State(initialValue: loan.book_id)
         _selectedMemberID = State(initialValue: loan.member_id)
     }
@@ -35,10 +35,18 @@ struct EditLoanView: View {
             Form {
                 // Loan Details Section
                 Section(header: Text("Loan Details")) {
-                    TextField("Loan Date", text: $loanDate)
-                        .keyboardType(.numbersAndPunctuation)
-                    TextField("Return Date", text: $returnDate)
-                        .keyboardType(.numbersAndPunctuation)
+                    // Loan Date Picker
+                    DatePicker("Loan Date", selection: $loanDate, displayedComponents: .date)
+                        .datePickerStyle(CompactDatePickerStyle()) // Compact style
+                        .onChange(of: loanDate) { newDate in
+                            // Automatically update returnDate to 7 days after loanDate
+                            if newDate > returnDate {
+                                returnDate = newDate
+                            }
+                        }
+                    // Return Date Picker
+                    DatePicker("Return Date", selection: $returnDate, displayedComponents: .date)
+                        .datePickerStyle(CompactDatePickerStyle())
                 }
                 
                 // Book and Member Selection Section
@@ -64,15 +72,25 @@ struct EditLoanView: View {
     // Function to handle saving the loan
     private func saveChanges() {
         // Validate the fields
-        if loanDate.isEmpty || returnDate.isEmpty || selectedBookID.isEmpty || selectedMemberID.isEmpty {
+        if selectedBookID.isEmpty || selectedMemberID.isEmpty {
             print("Error: All fields are required.")
             return
         }
 
         // Ensure loan ID is an integer
         if let loanID = Int(loan.id) {
+            // Format dates to string for saving
+            let loanDateString = Self.dateFormatter.string(from: loanDate)
+            let returnDateString = Self.dateFormatter.string(from: returnDate)
+            
             // Call the editLoan function on loanVM
-            loanVM.editLoan(loanID: loanID, bookID: selectedBookID, memberID: selectedMemberID, loanDate: loanDate, returnDate: returnDate)
+            loanVM.editLoan(
+                loanID: loanID,
+                bookID: selectedBookID,
+                memberID: selectedMemberID,
+                loanDate: loanDateString,
+                returnDate: returnDateString
+            )
         } else {
             print("Error: Invalid loan ID")
         }
@@ -80,6 +98,13 @@ struct EditLoanView: View {
         // Dismiss the view after saving changes
         presentationMode.wrappedValue.dismiss()
     }
+    
+    // Date Formatter
+    static let dateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        return formatter
+    }()
 }
 
 // Reusable Picker View for Book and Member

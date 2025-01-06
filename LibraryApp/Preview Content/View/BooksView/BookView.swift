@@ -6,7 +6,6 @@
 //
 
 
-
 import SwiftUI
 
 struct BooksView: View {
@@ -15,12 +14,12 @@ struct BooksView: View {
     @State private var selectedTab: Int = 0
     @State private var showAddBookView: Bool = false
     @State private var showingAddLoan = false
-    @State private var showEditBookView: Bool = false
     @State private var selectedBook: Book? = nil
     @State private var bookToDelete: Book? = nil
     @State private var bookToReactivate: Book? = nil
     @State private var alertType: AlertType? = nil
     @State private var searchText: String = ""
+    
 
     enum AlertType: Identifiable {
         case delete(Book)
@@ -66,8 +65,19 @@ struct BooksView: View {
                                 HStack {
                                     Spacer()
                                     if selectedTab == 0 {
+//                                        Button(action: {
+//                                            selectedBook = book
+//                                            showEditBookView = true
+//                                        }) {
+//                                            Image(systemName: "pencil")
+//                                                .foregroundColor(.blue)
+//                                                .padding(8)
+//                                                .background(
+//                                                    RoundedRectangle(cornerRadius: 5)
+//                                                        .stroke(Color.blue, lineWidth: 1)
+//                                                )
+//                                        }
                                         Button(action: {
-                                            showEditBookView = true
                                             selectedBook = book
                                         }) {
                                             Image(systemName: "pencil")
@@ -78,6 +88,8 @@ struct BooksView: View {
                                                         .stroke(Color.blue, lineWidth: 1)
                                                 )
                                         }
+
+
                                         Button(action: {
                                             bookToDelete = book
                                             alertType = .delete(book)
@@ -122,12 +134,11 @@ struct BooksView: View {
             .sheet(isPresented: $showAddBookView) {
                 AddBookView()
             }
-            .sheet(isPresented: $showEditBookView) {
-                if let selectedBook = selectedBook {
-                    EditBookView(book: selectedBook)
-                        .environmentObject(bookVM)
-                }
+            .sheet(item: $selectedBook) { book in
+                EditBookView(book: book)
+                    .environmentObject(bookVM)
             }
+
             .alert(item: $alertType) { alertType in
                 switch alertType {
                 case .delete(let book):
@@ -150,6 +161,7 @@ struct BooksView: View {
                     )
                 }
             }
+
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: {
