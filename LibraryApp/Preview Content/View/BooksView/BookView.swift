@@ -65,18 +65,6 @@ struct BooksView: View {
                                 HStack {
                                     Spacer()
                                     if selectedTab == 0 {
-//                                        Button(action: {
-//                                            selectedBook = book
-//                                            showEditBookView = true
-//                                        }) {
-//                                            Image(systemName: "pencil")
-//                                                .foregroundColor(.blue)
-//                                                .padding(8)
-//                                                .background(
-//                                                    RoundedRectangle(cornerRadius: 5)
-//                                                        .stroke(Color.blue, lineWidth: 1)
-//                                                )
-//                                        }
                                         Button(action: {
                                             selectedBook = book
                                         }) {
