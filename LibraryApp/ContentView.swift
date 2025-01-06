@@ -6,9 +6,6 @@
 //
 
 import SwiftUI
-
-import SwiftUI
-
 struct ContentView: View {
     @EnvironmentObject var bookVM: BookViewModel
     @EnvironmentObject var loanVM: LoanViewModel

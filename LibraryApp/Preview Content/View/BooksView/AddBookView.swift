@@ -9,6 +9,7 @@ import SwiftUI
 
 struct AddBookView: View {
     @EnvironmentObject var bookVM: BookViewModel
+    @Environment(\.dismiss) var dismiss
     @State private var bookName = ""
     @State private var authorName = ""
     @State private var bookYear = ""
@@ -26,6 +27,7 @@ struct AddBookView: View {
                 
                 Button(action: {
                     addBook()
+                    dismiss()
                 }) {
                     Text("Add Book")
                 }
